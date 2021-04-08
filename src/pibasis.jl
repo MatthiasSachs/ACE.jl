@@ -41,15 +41,64 @@ function PIBasisSpec( basis1p::OneParticleBasis,
 
    # get the basis spec of the one-particle basis
    #  Aspec[i] described the basis function that will get written into A[i]
-   Aspec = get_spec(basis1p)
+   #  but we don't care here since we will just map back and forth in the
+   #  pre-computation stage. note AAspec below will not store indices to Aspec
+   #  but the actual basis functions themselves.
+   Aspec = get_basis_spec(basis1p, z0)
+   # next we need to sort it by degree so that gensparse doesn't get confused.
+   Aspec_p = sort(Aspec, by = b -> degree(b, z0))
+   # now an index νi corresponds to the basis function
+   # Aspec[p[νi]] = Aspec_p[νi] and a tuple ν = (ν1,...,νN) to the following
+   # basis function
+   tup2b = ν -> PIBasisFcn(Aspec_p, ν, z0)
+   # we can now construct the basis specification; the `ordered = true`
+   # keyword signifies that this is a permutation-invariant basis
+   AAspec = gensparse(N, maxdeg;
+                      tup2b = tup2b, degfun = degree, ordered = true,
+                      maxν = length(Aspec_p),
+                      filter = filter)
+   return AAspec
+end
 
-   # we assume that `Aspec` is sorted by degree, but best to double-check this
-   # since the notion of degree used to construct `Aspec` might be different
-   # from the one used to construct AAspec.
-   if !issorted(Aspec; by = b -> degree(b, Deg, basis1p))
-      error("""PIBasisSpec : AAspec construction failed because Aspec is not
-               sorted by degree. This could e.g. happen if an incompatible
-               notion of degree was used to construct the 1-p basis spec.""")
+
+"""
+`mutable struct InnerPIBasis` : this type is just an auxilary type to
+make the implementation of `PIBasis` clearer. It implements the
+permutation-invariant basis for a single centre-atom species. The main
+type `PIBasis` then stores `NZ` objects of type `InnerPIBasis`
+and "dispatches" the work accordingly.
+"""
+mutable struct InnerPIBasis
+   orders::Vector{Int}           # order (length) of ith basis function
+   iAA2iA::Matrix{Int}           # where in A can we find the ith basis function
+   b2iAA::Dict{PIBasisFcn, Int}  # mapping PIBasisFcn -> iAA =  index in AA[z0]
+   b2iA::Dict{Any, Int}          # mapping from 1-p basis fcn to index in A[z0]
+   AAindices::UnitRange{Int}     # where in AA does AA[z0] fit?
+   z0::AtomicNumber              # inner basis for which species?
+   dag::CorrEvalGraph{Int, Int}  # for fast evaluation
+end
+
+
+==(B1::InnerPIBasis, B2::InnerPIBasis) = (
+   (B1.b2iA == B2.b2iA) &&
+   (B1.iAA2iA == B2.iAA2iA) )
+
+maxorder(basis::InnerPIBasis) = size(basis.iAA2iA, 2)
+
+Base.length(basis::InnerPIBasis) = length(basis.orders)
+
+function InnerPIBasis(Aspec, AAspec, AAindices, z0)
+   len = length(AAspec)
+   maxorder = maximum(order, AAspec)
+
+   # construct the b2iA mapping
+   b2iA = Dict{Any, Int}()
+   for (iA, b) in enumerate(Aspec)
+      if haskey(b2iA, b)
+         @show b
+         error("b2iA already has the key b. This means the basis spec is invalid.")
+      end
+      b2iA[b] = iA
    end
    # An AA basis function is given by a tuple 𝒗 = vv. Each index 𝒗ᵢ = vv[i]
    # corresponds to the basis function Aspec[𝒗ᵢ] and the tuple
@@ -158,7 +207,7 @@ setreal(basis::PIBasis, isreal::Bool) =
 #    return ww
 # end
 
-
+maxorder(basis::PIBasis) = maximum(maxorder.(basis.inner))
 
 # graphevaluator(basis::PIBasis) =
 #    PIBasis(basis.basis1p, zlist(basis), basis.inner, DAGEvaluator())

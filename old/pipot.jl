@@ -47,6 +47,7 @@ graphevaluator(V::PIPotential) =
 standardevaluator(V::PIPotential) =
    PIPotential(V.pibasis, V.coeffs, V.dags, StandardEvaluator())
 
+maxorder(V::PIPotential) = maxorder(V.pibasis)
 
 # ------------------------------------------------------------
 #   Initialisation code
@@ -78,6 +79,50 @@ function _getdagfrombasis(inner, c)
       end
    end
    return dag
+end
+
+# ------------------------------------------------------------
+#   experimental sparsification code
+
+function deletezeros(V::PIPotential)
+   idx0 = 0
+   innernew = []
+   coeffs = []
+   for iz0 = 1:length(V.coeffs)
+      # zeros
+      Iz = findall(V.coeffs[iz0] .== 0)
+      # non-zeros
+      Inz = findall(V.coeffs[iz0] .!= 0)
+      # inverse mapping from old to new (local) indices
+      invInz = Dict{Int, Int}()
+      for (i, val) in enumerate(Inz)
+         invInz[val] = i
+      end
+      # extract the inner basis to start rebuilding it
+      inner = V.pibasis.inner[iz0]     # old
+      iAA2iA = inner.iAA2iA[Inz, :]    # new
+      # construct the new b2iAA mapping
+      b2iAA = Dict{ACE.PIBasisFcn, Int}()   # new
+      for (b, iAA) in inner.b2iAA
+         if haskey(invInz, iAA)
+            b2iAA[b] = invInz[iAA]
+         end
+      end
+      # create the new inner basis
+      push!(innernew,
+            ACE.InnerPIBasis( inner.orders[Inz],
+                              iAA2iA,
+                              b2iAA,
+                              inner.b2iA,
+                              (idx0+1):(idx0+length(Inz)),
+                              inner.z0,
+                              ACE.DAG.CorrEvalGraph{Int, Int}() ) )
+      # and the new coefficients
+      push!(coeffs, V.coeffs[iz0][Inz])
+   end
+   pibasis = PIBasis( V.pibasis.basis1p, V.pibasis.zlist,
+                      tuple( innernew... ), V.pibasis.evaluator )
+   return standardevaluator(PIPotential( pibasis, tuple(coeffs...) ))
 end
 
 # ------------------------------------------------------------
@@ -168,7 +213,8 @@ alloc_temp_d(::StandardEvaluator, V::PIPotential{T}, N::Integer) where {T} =
        tmpd_pibasis = alloc_temp_d(V.pibasis, N),
        dV = zeros(JVec{real(T)}, N),
         R = zeros(JVec{real(T)}, N),
-        Z = zeros(AtomicNumber, N)
+        Z = zeros(AtomicNumber, N),
+        dAAt = zero(MVector{maxorder(V), fltype(V.pibasis.basis1p)})
       )
 
 # compute one site energy
@@ -189,18 +235,37 @@ function evaluate_d!(dEs, tmpd, V::PIPotential, ::StandardEvaluator,
    dAco = tmpd.dAco
    c = V.coeffs[iz0]
    inner = V.pibasis.inner[iz0]
+   dAAt = tmpd.dAAt
    fill!(dAco, 0)
    for iAA = 1:length(inner)
-      for α = 1:inner.orders[iAA]
-         CxA_α = c[iAA]
-         for β = 1:inner.orders[iAA]
-            if β != α
-               CxA_α *= A[inner.iAA2iA[iAA, β]]
-            end
-         end
-         iAα = inner.iAA2iA[iAA, α]
-         dAco[iAα] += CxA_α
+      c_ = c[iAA]
+      ord = inner.orders[iAA]
+      Afwd = one(eltype(A))
+      dAAt[1] = 1
+      for α = 1:ord-1
+         Afwd *= A[inner.iAA2iA[iAA, α]]
+         dAAt[α+1] = Afwd
       end
+      Abwd = one(eltype(A))
+      for α = ord:-1:2
+         Abwd *= A[inner.iAA2iA[iAA, α]]
+         dAAt[α-1] *= Abwd
+      end
+      for α = 1:ord
+         iAα = inner.iAA2iA[iAA, α]
+         dAco[iAα] += c_ * dAAt[α]
+      end
+
+      # for α = 1:inner.orders[iAA]
+      #    CxA_α = c[iAA]
+      #    for β = 1:inner.orders[iAA]
+      #       if β != α
+      #          CxA_α *= A[inner.iAA2iA[iAA, β]]
+      #       end
+      #    end
+      #    iAα = inner.iAA2iA[iAA, α]
+      #    dAco[iAα] += CxA_α
+      # end
    end
 
    # stage 3: get the gradients
