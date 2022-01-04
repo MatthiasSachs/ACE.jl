@@ -23,52 +23,49 @@ Xs = rand(PositionState{Float64}, B1p.bases[1], nX)
 cfg = ACEConfig(Xs)
 
 ##
+for type in [Float64, ComplexF64]
+   @info("SymmetricBasis construction and evaluation: EuclideanVector{",type,"}")
+   φ = ACE.EuclideanVector(type)
+   pibasis = PIBasis(B1p, Bsel; property = φ)
+   basis = SymmetricBasis(φ, pibasis)
+   @time SymmetricBasis(φ, pibasis)
 
-@info("SymmetricBasis construction and evaluation: EuclideanVector")
+   BB = evaluate(basis, cfg)
 
+   Iz = findall(iszero, sum(norm, basis.A2Bmap, dims=1)[:])
+   if !isempty(Iz)
+      @warn("The A2B map for EuclideanVector has $(length(Iz))/$(length(basis.pibasis)) zero-columns!!!!")
+   end
 
-φ = ACE.EuclideanVector(Float64)
-pibasis = PIBasis(B1p, Bsel; property = φ)
-basis = SymmetricBasis(φ, pibasis)
-@time SymmetricBasis(φ, pibasis)
+   ##
 
-BB = evaluate(basis, cfg)
+   @info("Test FIO")
+   using ACEbase.Testing: test_fio
 
-Iz = findall(iszero, sum(norm, basis.A2Bmap, dims=1)[:])
-if !isempty(Iz)
-   @warn("The A2B map for EuclideanVector has $(length(Iz))/$(length(basis.pibasis)) zero-columns!!!!")
+   println(@test(all(test_fio(basis; warntype = false))))
+
+   ##
+
+   @info("Test equivariance properties for real version")
+
+   tol = 1e-10
+
+   @info("check for rotation, permutation and inversion equivariance")
+   for ntest = 1:30
+      local Xs, BB
+      Xs = rand(PositionState{Float64}, B1p.bases[1], nX)
+      BB = evaluate(basis, ACEConfig(Xs))
+      Q = rand([-1,1]) * ACE.Random.rand_rot()
+      Xs_rot = Ref(Q) .* shuffle(Xs)
+      BB_rot = evaluate(basis, ACEConfig(Xs_rot))
+      print_tf(@test all([ norm(Q' * b1 - b2) < tol
+                           for (b1, b2) in zip(BB_rot, BB)  ]))
+   end
+   println()
+
 end
 
-##
-
-@info("Test FIO")
-using ACEbase.Testing: test_fio
-
-println(@test(all(test_fio(basis; warntype = false))))
-
-##
-
-@info("Test equivariance properties for real version")
-
-tol = 1e-10
-
-@info("check for rotation, permutation and inversion equivariance")
-for ntest = 1:30
-   local Xs, BB
-   Xs = rand(PositionState{Float64}, B1p.bases[1], nX)
-   BB = evaluate(basis, ACEConfig(Xs))
-   Q = rand([-1,1]) * ACE.Random.rand_rot()
-   Xs_rot = Ref(Q) .* shuffle(Xs)
-   BB_rot = evaluate(basis, ACEConfig(Xs_rot))
-   print_tf(@test all([ norm(Q' * b1 - b2) < tol
-                        for (b1, b2) in zip(BB_rot, BB)  ]))
-end
-println()
-
-
-# @info("Test equivariance properties for complex version")
-#
-# basis = SymmetricBasis(φ, pibasis; isreal=false)
+#basis = SymmetricBasis(φ, pibasis; isreal=false)
 # # a stupid but necessary test
 # BB = evaluate(basis, cfg)
 # BB1 = basis.A2Bmap * evaluate(basis.pibasis, cfg)
