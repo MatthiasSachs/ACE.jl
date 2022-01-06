@@ -62,7 +62,11 @@ function RnYlm_1pbasis(; maxdeg=6, maxL = maxdeg, varsym = :rr, idxsyms = (:n, :
    return B1p
 end
 
+
 function BondBasisSelector(Bsel::ACE.SparseBasis; isym=:be, bond_weight = 1.0, env_weight = 1.0)
+   """
+   Adds an additional bond-constraint to the basis selector `Bsel`
+   """
    return ACE.CategorySparseBasis(Bsel.maxorder, isym, [:bond, :env];
             p = Bsel.p, 
             weight = Bsel.weight, 
@@ -74,6 +78,9 @@ function BondBasisSelector(Bsel::ACE.SparseBasis; isym=:be, bond_weight = 1.0, e
 end
 
 function SymmetricBond_basis(ϕ::ACE.AbstractProperty, env::ACE.BondEnvelope, Bsel::ACE.SparseBasis; RnYlm = nothing, kwargs...)
+   """
+   Constructs an ACE basis that acts on the bond environment `env`. 
+   """
    BondSelector =  BondBasisSelector(Bsel; kwargs...)
    if RnYlm === nothing
        RnYlm = RnYlm_1pbasis(;   r0 = ACE.cutoff_radialbasis(env), 
