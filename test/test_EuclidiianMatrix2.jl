@@ -21,12 +21,31 @@ cfg = ACEConfig(Xs)
 
 @info("SymmetricBasis construction and evaluation: EuclideanMatrix")
 
-for symmetry in [:general :symmetric]
+
+φ = ACE.EuclideanMatrix(Float64,:antisymmetric)
+pibasis = PIBasis(B1p, Bsel; property = φ)
+basis = SymmetricBasis(φ, pibasis)
+#@time SymmetricBasis(φ, pibasis)
+BB = evaluate(basis, cfg)
+print(ACE.get_spec(basis))
+
+spec_AA = ACE.get_spec(basis.pibasis)
+spec_B = [] 
+for iB = 1:length(basis)
+   println(iB)
+   iAA = findfirst(norm.(basis.A2Bmap[iB, :]) .!= 0)
+   @show iAA
+   push!(spec_B, ACE.get_sym_spec(basis.symgrp, spec_AA[iAA]))
+end
+
+
+ACE.get_spec(basis.pibasis)
+for symmetry in [:antisymmetric]
    @info("Symmetry type: ", symmetry )
    φ = ACE.EuclideanMatrix(Float64,symmetry)
    pibasis = PIBasis(B1p, Bsel; property = φ)
    basis = SymmetricBasis(φ, pibasis)
-   @time SymmetricBasis(φ, pibasis)
+   #@time SymmetricBasis(φ, pibasis)
    @show length(basis)
    BB = evaluate(basis, cfg)
 
@@ -113,9 +132,28 @@ for symmetry in [:general :symmetric]
       #print_tf(@test all([ norm(imag(b.val)) < .1  for b in BB  ]))
    end
    println()
-   print(ACE.get_spec(basis)[1])
+   #print(ACE.get_spec(basis)[1])
 end
 ##
+
+# function coco_filter(φ::EuclideanMatrix, ll, mm)
+#     if φ.symmetry == :general
+#        return iseven(sum(ll)) && (abs(sum(mm)) <= 2)
+#     elseif φ.symmetry == :symmetric
+#        return iseven(sum(ll)) && (abs(sum(mm)) <= 2)
+#     elseif φ.symmetry == :antisymmetric
+#        return iseven(sum(ll)) && (abs(sum(mm)) <= 1)
+#     end
+#  end
+#  function coco_filter(φ::EuclideanMatrix, ll, mm, kk) 
+#     if φ.symmetry == :general
+#        return iseven(sum(ll)) && (abs(sum(mm)) <= 2 && abs(sum(kk)) <= 2)
+#     elseif φ.symmetry == :symmetric
+#        return iseven(sum(ll)) && (abs(sum(mm)) <= 2 && abs(sum(kk)) <= 2)
+#     elseif φ.symmetry == :antisymmetric
+#        return iseven(sum(ll)) && (abs(sum(mm)) <= 1 && abs(sum(kk)) <= 1)
+#     end
+#  end
 
 @info("Test equivariance properties for complex version")
 
