@@ -1,6 +1,6 @@
 
 
-using ACE, Test, StaticArrays, BenchmarkTools, ACEbase 
+using ACE, Test, StaticArrays, BenchmarkTools, ACEbase, ACE.ACEbase024 
 using ACE: read_dict, write_dict, 
            evaluate, evaluate_d, evaluate_dd
 using ACEbase.Testing: println_slim, print_tf, fdtest, test_fio 

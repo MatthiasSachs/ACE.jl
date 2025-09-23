@@ -3,7 +3,7 @@
 
 ##
 using ACE, StaticArrays, ACE.SphericalHarmonics;
-using ACEbase
+using ACEbase, ACE.ACEbase024
 using ACE.SphericalHarmonics: index_y;
 using ACE: evaluate
 using Random, Printf, Test, ACE.Testing

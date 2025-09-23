@@ -1,7 +1,7 @@
 using ACE, Printf, BenchmarkTools
 
 using ACE: evaluate, evaluate!, evaluate_d, evaluate_d! 
-using ACEbase: acquire_B!, acquire_dB!
+using ACE.ACEbase024: acquire_B!, acquire_dB!
 
 TX = ACE.PositionState{Float64}
 B1p = ACE.Utils.RnYlm_1pbasis()

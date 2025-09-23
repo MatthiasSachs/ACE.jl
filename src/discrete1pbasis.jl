@@ -1,6 +1,6 @@
 
 
-import ACEbase: Discrete1pBasis
+import ACE.ACEbase024: Discrete1pBasis
 import ACE: evaluate, evaluate!
 
 export Categorical1pBasis

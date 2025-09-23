@@ -1,8 +1,9 @@
 using LinearAlgebra: length
-using ACE, ACEbase, Test, ACE.Testing
+using ACE, ACEbase, ACE.ACEbase024, Test, ACE.Testing
 using ACE: evaluate, SymmetricBasis, PIBasis, O3, rand_vec3, rand_radial
 using ACEbase.Testing: println_slim
 using StaticArrays
+using LinearAlgebra: isdiag
 
 
 ##

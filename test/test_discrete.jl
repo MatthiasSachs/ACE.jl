@@ -1,5 +1,5 @@
 
-using ACE, Test, ACEbase, ACEbase.Testing, 
+using ACE, Test, ACEbase, ACE.ACEbase024, ACEbase.Testing, 
       StaticArrays
 
 using ACE.Random: rand_rot, rand_refl

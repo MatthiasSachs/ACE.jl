@@ -2,7 +2,7 @@
 ##
 
 using Yota
-using ACE, ACEbase, Zygote, ChainRules, BenchmarkTools, StaticArrays
+using ACE, ACEbase, ACE.ACEbase024, Zygote, ChainRules, BenchmarkTools, StaticArrays
 using Printf, Test, LinearAlgebra, ACE.Testing, Random
 using ACE: evaluate, evaluate_d, SymmetricBasis, NaiveTotalDegree, PIBasis
 using ACEbase.Testing: fdtest

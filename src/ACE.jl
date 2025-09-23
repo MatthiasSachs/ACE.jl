@@ -13,10 +13,23 @@ include("imports.jl")
 
 # TODO 
 # - move to imports
+include("patches/ACEbase-v0-2-4-patch.jl")
 
-import ACEbase: evaluate, evaluate_d, 
-                ACEBasis, acquire!, release! 
-using ACEbase.ObjectPools: acquire!, release!, VectorPool
+import .ACEbase024
+import .ACEbase024: ACEBasis, ScalarACEBasis, OneParticleBasis, Discrete1pBasis, 
+                   precon!,
+                   AbstractState,
+                   AbstractConfiguration,
+                   AbstractContinuousState,
+                   AbstractDiscreteState
+
+import .ACEbase024: ACEBasis, acquire!, release! 
+using .ACEbase024: acquire!, release!, VectorPool
+
+# import ACEbase: evaluate, evaluate_d, 
+#                 ACEBasis, acquire!, release! 
+
+# using ACEbase.ObjectPools: acquire!, release!, VectorPool
 using ForwardDiff: derivative
 import ChainRules: rrule, ZeroTangent, NoTangent
 

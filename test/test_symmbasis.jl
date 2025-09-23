@@ -90,7 +90,7 @@ end
 
 ##
 
-import ACEbase
+import ACEbase, ACE.ACEbase024
 @info("Test FIO")
 let basis1 = basis 
    println_slim(@test(all(ACEbase.Testing.test_fio(basis1; warntype=false))))

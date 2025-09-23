@@ -10,7 +10,7 @@ using ACE: evaluate, evaluate_d, evaluate_ed,
       valtype, gradtype, acquire_B!, acquire_dB!, 
       discrete_jacobi, release! 
 using Random: shuffle
-using ACEbase.Testing: dirfdtest, fdtest, print_tf, test_fio, println_slim
+using ACEbase.Testing: dirfdtest, fdtest, print_tf, test_fio, println_slim # MS: checked
 
 ##
 

@@ -3,7 +3,7 @@
 ##
 
 
-using ACE, ACEbase, Zygote, ChainRules
+using ACE, ACEbase, ACE.ACEbase024, Zygote, ChainRules
 using Printf, Test, LinearAlgebra, ACE.Testing, Random
 using ACE: evaluate, evaluate_d, SymmetricBasis, NaiveTotalDegree, PIBasis
 using ACEbase.Testing: fdtest

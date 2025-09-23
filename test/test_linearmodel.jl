@@ -4,7 +4,7 @@
 ##
 
 
-using ACE, ACEbase, StaticArrays
+using ACE, ACEbase, ACE.ACEbase024, StaticArrays
 using Printf, Test, LinearAlgebra, ACE.Testing, Random
 using ACE: evaluate, evaluate_d, SymmetricBasis, PIBasis, 
            grad_config, grad_params, O3, rand_vec3

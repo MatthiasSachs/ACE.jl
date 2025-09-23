@@ -19,20 +19,24 @@ end
 @def baseimports begin
    import ACEbase
 
-   import ACEbase: ACEBasis, ScalarACEBasis, OneParticleBasis, Discrete1pBasis, 
+   import ACEbase: #ACEBasis, ScalarACEBasis, OneParticleBasis, Discrete1pBasis, 
                    evaluate, evaluate_d, evaluate_dd, evaluate_ed,
                    evaluate!, evaluate_d!, evaluate_dd!, evaluate_ed!,
-                   precon!, _allfieldsequal,
-                   AbstractState,
-                   AbstractConfiguration,
-                   AbstractContinuousState,
-                   AbstractDiscreteState
+                   _allfieldsequal
+                   # precon!, _allfieldsequal,
+                   # AbstractState,
+                   # AbstractConfiguration,
+                   # AbstractContinuousState,
+                   # AbstractDiscreteState
 
 
    import ACEbase: FIO
    import ACEbase.FIO: read_dict, write_dict, save_json, load_json
+   
 end
+@def baseimports024 begin
 
+end
 
 # modules external to our own eco-system, rigorously separate using and import
 

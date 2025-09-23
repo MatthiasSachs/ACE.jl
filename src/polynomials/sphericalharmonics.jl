@@ -5,7 +5,7 @@ module SphericalHarmonics
 
 using StaticArrays, LinearAlgebra
 
-import ACE, ACEbase 
+import ACE, ACEbase, ACE.ACEbase024 
 
 import ACE: evaluate!, evaluate_d!, evaluate_ed!,
 			   write_dict, read_dict,

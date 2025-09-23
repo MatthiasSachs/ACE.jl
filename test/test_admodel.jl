@@ -1,5 +1,5 @@
 using LinearAlgebra: length
-using ACE, ACEbase, Test, ACE.Testing
+using ACE, ACEbase, ACE.ACEbase024, Test, ACE.Testing
 using ACE: evaluate, SymmetricBasis, PIBasis, O3, State, val, grad_config, rand_vec3
 using StaticArrays
 using ChainRules

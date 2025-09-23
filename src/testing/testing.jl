@@ -8,7 +8,7 @@ import ACE
 ACE.@extimports
 ACE.@aceimports
 
-import ACEbase
+import ACEbase, ACE.ACEbase024
 import ACEbase.Testing: print_tf, test_fio
 
 export print_tf, test_fio, test_transform

@@ -1,6 +1,6 @@
 ##
 
-import ACE, ACEbase
+import ACE, ACEbase, ACE.ACEbase024
 using LinearAlgebra, StaticArrays, Test, Printf, ACE.Testing
 using ACE: evaluate, evaluate_d, evaluate_ed, Trig1pBasis, Trig
 

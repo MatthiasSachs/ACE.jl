@@ -1,6 +1,6 @@
 
 
-using ACE, ACEbase, StaticArrays
+using ACE, ACEbase, ACE.ACEbase024, StaticArrays
 using Printf, LinearAlgebra, ACE.Testing, Random
 using ACE: evaluate, evaluate_d, SymmetricBasis, SimpleSparseBasis, PIBasis, 
            PositionState
