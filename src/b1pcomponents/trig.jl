@@ -31,7 +31,7 @@ end
 # -------- prototype implementation 
 #          a more sophisticated implementation could go into the polynomials 
 
-using ForwardDiff
+# using ForwardDiff
 
 struct Trig
    L::Int 

@@ -721,9 +721,9 @@ val(x) = x.val
 
 # _rrule_val and rrule functions removed - derivative functionality has been removed 
 
-import ChainRulesCore: ProjectTo
+# import ChainRulesCore: ProjectTo
 
-(::ProjectTo{T})(φ::Invariant{T}) where {T} = val(φ)
+# (::ProjectTo{T})(φ::Invariant{T}) where {T} = val(φ)
 
 
 

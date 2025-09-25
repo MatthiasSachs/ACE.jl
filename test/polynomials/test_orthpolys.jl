@@ -5,7 +5,7 @@
 @info("--------- Testing OrthogonalPolynomials ----------")
 
 ##
-using ACE, Test, ForwardDiff
+using ACE, Test #, ForwardDiff
 
 using LinearAlgebra: norm, cond
 using ACE.OrthPolys: OrthPolyBasis

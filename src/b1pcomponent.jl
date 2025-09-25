@@ -215,35 +215,3 @@ evaluate(basis::B1pComponent, X::AbstractState) =
 # -------------- AD codes 
 
 
-
-
-#=   *** TODO 
-import ChainRules: rrule, ZeroTangent, NoTangent
-
-function _rrule_evaluate(basis::Scal1pBasis, X::AbstractState, 
-                         w::AbstractVector{<: Number})
-   @assert _varidx(basis) == 1
-   x = _val(X, basis)
-   a = _rrule_evaluate(basis.P, x, real.(w))
-   TDX = ACE.dstate_type(a, X)
-   return TDX( NamedTuple{(_varsym(basis),)}( (a,) ) )
-end
-
-rrule(::typeof(evaluate), basis::Scal1pBasis, X::AbstractState) = 
-                  evaluate(basis, X), 
-                  w -> (NoTangent(), NoTangent(), _rrule_evaluate(basis, X, w))
-
-             
-                  
-
-function rrule(::typeof(evaluate_d), basis::Scal1pBasis, X::AbstractState)
-   @assert _varidx(basis) == 1
-   x = _val(X, basis)
-   dB_ = evaluate_d(basis.P, x)
-   TDX = dstate_type(valtype(basis, X), X)
-   dB = [ TDX( NamedTuple{(_varsym(basis),)}( (dx,) ) )  for dx in dB_ ]
-   return dB, 
-          w -> (NoTangent(), NoTangent(), _rrule_evaluate_d(basis, X, w))
-end
-
-=#

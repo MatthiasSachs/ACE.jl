@@ -148,12 +148,6 @@ function evaluate!(A, basis::Product1pBasis, cfg::UConfig)
 end
 
 
-evaluate_ed(basis::Product1pBasis, X::AbstractState) = 
-         error("evaluate_ed functionality removed along with add_into_A_dA functions")
-
-function evaluate_ed(basis::Product1pBasis, Xs::UConfig) 
-   error("evaluate_ed functionality removed along with add_into_A_dA functions")
-end 
 
 # ------------- Partial derivative functionality 
 
@@ -161,16 +155,6 @@ _check_args_is_sym() = true
 _check_args_is_sym(::Symbol) = true
 
 
-# args... may be empty or a symbol  for partial derivatives
-function evaluate_ed!(A, dA, basis::OneParticleBasis,
-                     cfg::UConfig, args...)
-   error("evaluate_ed! functionality removed along with add_into_A_dA functions")
-end
-
-# args... may be empty or a symbol for partial derivatives
-function evaluate_ed!(A, dA, basis::Product1pBasis, X::AbstractState, args...)
-   error("evaluate_ed! functionality removed along with add_into_A_dA functions")
-end
 
 # ----------------------------------------
 

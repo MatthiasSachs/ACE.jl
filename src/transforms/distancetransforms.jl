@@ -42,20 +42,6 @@ end
 # ------------------------------------------------------
 # generic ad codes for distance transforms 
 
-import ACE: rrule_evaluate, frule_evaluate, evaluate 
+import ACE:  evaluate 
 
 evaluate(trans::DistanceTransform, r::Number) = transform(trans, r)
-
-function frule_evaluate(trans::DistanceTransform, r::Number, ∇r)
-   # ∇r will be an abstract array or an abstract array encapsulated in a state
-   dt = transform_d(trans, r)
-   return dt * ∇r
-end
-
-function rrule_evaluate(trans::DistanceTransform, r::Number, w::AbstractVector)
-   # here, the typical scenario is that evaluate -> B(T(r)), so the rrule 
-   # should give ∑_n u_n d/dr B_n(T(r)) = ∑_n u_n B_n'(T(r)) * T'(r)
-   # i.e. w = ∑_n u_n B_n'(T(r)) which is scalar-like. 
-   return transform_d(trans, r) * w
-end
-

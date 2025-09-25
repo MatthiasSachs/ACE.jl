@@ -10,16 +10,16 @@ module ParamTest
 using ACE, JuLIP, LinearAlgebra
 import ACE: alloc_temp
 import ACE.PairPotentials: PolyPairBasis
-import ACE.OrthPolys: TransformedPolys
+# import ACE.OrthPolys: TransformedPolys
 import JuLIP: energy, evaluate!
 
 set_params(trans::PolyTransform, params) =
           PolyTransform(params[1], params[2])
 
-set_params(J::TransformedPolys, params) =
-          TransformedPolys(J.J,
-                           set_params(J.trans, params),
-                           J.rl, J.ru)
+# set_params(J::TransformedPolys, params) =
+#           TransformedPolys(J.J,
+#                            set_params(J.trans, params),
+#                            J.rl, J.ru)
 
 set_params(pB::PolyPairBasis, params) =
          PolyPairBasis( set_params(pB.J, params),
@@ -54,13 +54,13 @@ B1 = energy(pB, at)
 params = [2.1, 2.6]
 B2 = energy(params, pB, at)
 
-using ForwardDiff
-DB = ForwardDiff.jacobian( p -> energy(p, pB, at), params)
+# using ForwardDiff
+# DB = ForwardDiff.jacobian( p -> energy(p, pB, at), params)
 
-dp = rand(2) .= 0.5
-for p = 2:10
-   h = 0.1^p
-   Bh = energy(params + h * dp, pB, at)
-   err = norm((Bh - B2) / h - DB * dp, Inf)
-   @show err
-end
+# dp = rand(2) .= 0.5
+# for p = 2:10
+#    h = 0.1^p
+#    Bh = energy(params + h * dp, pB, at)
+#    err = norm((Bh - B2) / h - DB * dp, Inf)
+#    @show err
+# end

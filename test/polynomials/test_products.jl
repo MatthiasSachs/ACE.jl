@@ -5,7 +5,7 @@
 @info("--------- Testing Products of Polynomials ----------")
 
 ##
-using ACE, Test, ForwardDiff, JuLIP, JuLIP.Testing
+using ACE, Test, JuLIP, JuLIP.Testing #, ForwardDiff
 
 using LinearAlgebra: norm, cond
 using ACE.OrthPolys: OrthPolyBasis

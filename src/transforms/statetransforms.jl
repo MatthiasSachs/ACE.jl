@@ -1,9 +1,9 @@
 using StaticArrays
 import ACE 
-import ACE: evaluate, evaluate_d, evaluate_dd,  
+import ACE: evaluate, 
             write_dict, read_dict, 
-            DState, 
-            frule_evaluate! 
+            DState
+            # frule_evaluate! 
 
 using LinearAlgebra: I, norm  
 

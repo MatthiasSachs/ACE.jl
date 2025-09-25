@@ -5,15 +5,11 @@ version = "0.12.46"
 [deps]
 ACEbase = "14bae519-eb20-449c-a949-9c58ed33163e"
 BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
-ChainRules = "082447d4-558c-5d27-93f4-14fc19e9eca2"
-ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
 Combinatorics = "861a8166-3701-5b0c-9a16-15d98fcdc6aa"
 DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
-ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
 JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
 LegibleLambdas = "f1f30506-32fe-5131-bd72-7c197988f9e5"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
-LoopVectorization = "bdcacae8-1622-11e9-2a5c-532679323890"
 NamedTupleTools = "d9ec5142-1e00-5aa0-9d6a-321866360f50"
 Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
@@ -23,7 +19,6 @@ SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 UnsafeArrays = "c4a57d5a-5b31-53a6-b365-19f8c011fbd6"
-Zygote = "e88e6eb3-aa80-5325-afca-941959d7151f"
 
 [compat]
 ACEbase = "0.4.5"
@@ -31,7 +26,6 @@ NamedTupleTools = "0.13"
 julia = "1.7"
 
 [extras]
-ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
 InteractiveUtils = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
 Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 PyCall = "438e738f-606a-5dbb-bf0a-cddfbfd45ab0"
@@ -40,4 +34,4 @@ SymPy = "24249f21-da20-56a4-8eb1-6a02cf4ae2e6"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["Test", "PyCall", "SymPy", "ForwardDiff", "Pkg"]
+test = ["Test", "PyCall", "SymPy", "Pkg"]

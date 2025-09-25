@@ -9,7 +9,7 @@ import ACE
 
 import ACE: evaluate!, 
             evaluate, 
-            frule_evaluate, 
+            # frule_evaluate, 
             read_dict, write_dict,
             inv_transform,
             ACEBasis, ScalarACEBasis, 
@@ -17,7 +17,7 @@ import ACE: evaluate!,
             ArrayCache, 
             chain 
 
-using ForwardDiff: derivative
+# using ForwardDiff: derivative
 
 import Base: ==
 
@@ -30,11 +30,11 @@ export orthpolys, transformed_jacobi, discrete_jacobi
 #    6.7ns, 9.2ns, 11.7ns => no need to hand-optimise
 _fcut_inner(pl, tl, pr, tr, t) = (t - tl)^pl * (t - tr)^pr
 
-_fcut_d_inner(pl, tl, pr, tr, t) = 
-      derivative( t -> _fcut_inner(pl, tl, pr, tr, t),  t )
+# _fcut_d_inner(pl, tl, pr, tr, t) = 
+#       derivative( t -> _fcut_inner(pl, tl, pr, tr, t),  t )
 
-_fcut_dd_inner(pl, tl, pr, tr, t) = 
-      derivative( t -> _fcut_d_inner(pl, tl, pr, tr, t),  t )
+# _fcut_dd_inner(pl, tl, pr, tr, t) = 
+#       derivative( t -> _fcut_d_inner(pl, tl, pr, tr, t),  t )
 
 
 function _fcut_(pl, tl, pr, tr, t)
@@ -320,17 +320,6 @@ end
 
 
 
-
-# ------------- AD
-
-import ACE: frule_evaluate
-
-
-
-
-
-
-# _rrule_evaluate function removed - derivative functionality has been removed
 
 
 end
