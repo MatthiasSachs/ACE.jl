@@ -12,9 +12,7 @@
 
 import ACE: alloc_B, alloc_dB
 import Base: ==
-import JuLIP: evaluate!, evaluate_d!,
-              alloc_temp, alloc_temp_d,
-              read_dict, write_dict
+import JuLIP: alloc_temp, read_dict, write_dict
 
 import JuLIP.MLIPs: IPBasis
 

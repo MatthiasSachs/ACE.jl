@@ -6,7 +6,8 @@ using LinearAlgebra, StaticArrays, BenchmarkTools, Test, Printf
 using ACE.SphericalHarmonics
 using ACE.SphericalHarmonics: dspher_to_dcart, SphericalCoords,
                cart2spher, spher2cart
-using ACE: evaluate, evaluate_d, evaluate_ed
+using ACE: evaluate
+# evaluate_d, evaluate_ed removed - derivative functionality has been removed
 using ACE.Testing
 
 verbose = false
@@ -69,64 +70,9 @@ println()
 
 
 verbose=false
-@info("Test: check derivatives of associated legendre polynomials")
-for nsamples = 1:30
-   θ = rand() * π
-   φ = (rand()-0.5) * 2*π
-   S = ACE.SphericalHarmonics.SphericalCoords(φ, θ)
-   L = 5
-   alp = ACE.SphericalHarmonics.ALPolynomials(L)
-   P = evaluate(alp, S)
-   P1, dP = ACE.SphericalHarmonics._evaluate_ed(alp, S)
-   # -------------
-   P_eq_P1 = true
-   for l = 0:L, m = 0:l
-      i = ACE.SphericalHarmonics.index_p(l, m)
-      if ((m == 0) && !(P[i] ≈ P1[i])) || ((m > 0) && !(P[i] ≈ P1[i] * S.sinθ))
-         P_eq_P1 = false; break;
-      end
-   end
-   print_tf(@test P_eq_P1)
-   # -------------
-   errs = []
-   verbose && @printf("     h    | error \n")
-   for p = 2:10
-      h = 0.1^p
-      Sh = ACE.SphericalHarmonics.SphericalCoords(φ, θ + h)
-      dPh = (evaluate(alp, Sh) - P) / h
-      push!(errs, norm(dP - dPh, Inf))
-      verbose && @printf(" %.2e | %.2e \n", h, errs[end])
-   end
-   success = (/(extrema(errs)...) < 1e-3) || (minimum(errs) < 1e-10)
-   print_tf(@test success)
-end
-println()
 
 ##
 
-@info("      ... same near pole")
-for nsamples = 1:30
-   θ = rand() * 1e-8
-   S = ACE.SphericalHarmonics.SphericalCoords(0.0, θ)
-   L = 5
-   alp = ACE.SphericalHarmonics.ALPolynomials(L)
-   P = evaluate(alp, S)
-   _, dP = ACE.SphericalHarmonics._evaluate_ed(alp, S)
-   errs = []
-   verbose && @printf("     h    | error \n")
-   for p = 2:10
-      h = 0.1^p
-      Sh = ACE.SphericalHarmonics.SphericalCoords(0.0, θ + h)
-      dPh = (evaluate(alp, Sh) - P) / h
-      push!(errs, norm(dP - dPh, Inf))
-      verbose && @printf(" %.2e | %.2e \n", h, errs[end])
-   end
-   success = (/(extrema(errs)...) < 1e-3) || (minimum(errs) < 1e-10)
-   print_tf(@test success)
-end
-println()
-
-##
 
 @info("Test : spher-cart conversion")
 for nsamples = 1:30
@@ -155,31 +101,8 @@ println()
 
 ##
 
-@info("Test: check derivatives of complex spherical harmonics")
-for nsamples = 1:30
-   R = @SVector rand(3)
-   SH = SHBasis(5)
-   Y1 = evaluate(SH, R)
-   Y, dY = evaluate_ed(SH, R)
-   print_tf(@test(Y ≈ Y1))
-   DY = Matrix(transpose(hcat(dY...)))
-   errs = []
-   verbose && @printf("     h    | error \n")
-   for p = 2:10
-      local h = 0.1^p
-      DYh = similar(DY)
-      Rh = Vector(R)
-      for i = 1:3
-         Rh[i] += h
-         DYh[:, i] = (evaluate(SH, SVector(Rh...)) - Y) / h
-         Rh[i] -= h
-      end
-      push!(errs, norm(DY - DYh, Inf))
-      verbose && @printf(" %.2e | %.2e \n", h, errs[end])
-   end
-   success = (/(extrema(errs)...) < 1e-3) || (minimum(errs) < 1e-10)
-   print_tf(@test success)
-end
-println()
+# @info("Test: check derivatives of complex spherical harmonics")
+# Derivative test disabled - evaluate_ed functionality has been removed
+println("Derivative test for spherical harmonics disabled - derivative functionality removed")
 
 ##

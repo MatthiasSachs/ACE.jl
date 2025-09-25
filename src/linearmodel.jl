@@ -107,25 +107,11 @@ read_dict(::Val{:ACE_NaiveEvaluator}, D::Dict, args...) =
 evaluate(m::LinearACEModel, X::AbstractConfiguration) = 
       evaluate(m, m.evaluator, X)
 
-grad_config(m::LinearACEModel, X::AbstractConfiguration) = 
-      grad_config(m, m.evaluator, X)
+# grad_config function removed - derivative functionality has been removed
 
-# there is a canonical implementation for this, so no need to dispatch 
-function grad_params(m::LinearACEModel, cfg::AbstractConfiguration)
-   _gi(Bi, c::Number) = Bi 
-   _gi(Bi, c::SVector{N, <: Number}) where {N} = 
-         SMatrix{N,N}( Diagonal([ Bi for _=1:N ]) )
+# grad_params function removed - derivative functionality has been removed
 
-   B = evaluate(m.basis, cfg) 
-   g = [ _gi(B[i], m.c[i]) for i = 1:length(B) ]
-   release!(B)
-   return g 
-end
-
-# ∂_params ∂_config V
-# currently doesn't work with multiple properties
-grad_params_config(m::LinearACEModel, cfg::AbstractConfiguration) = 
-      error("evaluate_d functionality has been removed")
+# grad_params_config function removed - derivative functionality has been removed
 
 
 
@@ -145,20 +131,18 @@ function evaluate(m::LinearACEModel, ::NaiveEvaluator, cfg::AbstractConfiguratio
    return val 
 end 
 
-function grad_config(m::LinearACEModel, ::NaiveEvaluator, 
-                    cfg::AbstractConfiguration)
-   error("evaluate_d functionality has been removed")
-end
+# grad_config function for NaiveEvaluator removed - derivative functionality has been removed
 
 function adjoint_EVAL_D(m::LinearACEModel, ::NaiveEvaluator, 
                         X::AbstractConfiguration, w) 
-   dB = grad_params_config(m, X)
-   g = zeros(size(dB, 1))
-   for i = 1:length(g), j = 1:size(dB, 2)
-      g[i] += dot(dB[i, j], w[j])
-   end
-   release_dB!(m.basis, dB)
-   return g
+   error("grad_params_config functionality has been removed")
+   # dB = grad_params_config(m, X)  -- removed
+   # g = zeros(size(dB, 1))  -- removed
+   # for i = 1:length(g), j = 1:size(dB, 2)  -- removed
+   #    g[i] += dot(dB[i, j], w[j])  -- removed
+   # end  -- removed
+   # release_dB!(m.basis, dB)  -- removed
+   # return g  -- removed
 end
 
 
@@ -169,9 +153,10 @@ import ChainRules: rrule, @thunk, NoTangent, @not_implemented
 
 
 function _adj_evaluate(dp, model::ACE.LinearACEModel, cfg)
-   gp_ = ACE.grad_params(model, cfg)
-   gp = [ a * dp for a in gp_ ]
-   return NoTangent(), gp, _rrule_evaluate(dp, model, cfg)
+   error("grad_params functionality has been removed")
+   # gp_ = ACE.grad_params(model, cfg)  -- removed
+   # gp = [ a * dp for a in gp_ ]  -- removed
+   # return NoTangent(), gp, _rrule_evaluate(dp, model, cfg)  -- removed
 end
 
 # this is monkey-patching the rotten rrule inside of ACE
@@ -210,12 +195,12 @@ function ChainRules.rrule(::typeof(_adj_evaluate), dp, model::ACE.LinearACEModel
       grad = ACE.adjoint_EVAL_D(model, model.evaluator, cfg, dq)
 
       # gradient w.r.t parameters: 
-      grad_params = [ gg * dp for gg in grad ]
+      # grad_params = [ gg * dp for gg in grad ]  -- removed
 
       # gradient w.r.t. dp    # TODO: remove the |> Vector? 
       grad_dp = sum( model.c[k] * grad[k] for k = 1:length(grad) )  |> Vector 
 
-      return NoTangent(), grad_dp, grad_params, NoTangent()
+      return NoTangent(), grad_dp, NoTangent(), NoTangent()
    end
 
    return _adj_evaluate(dp, model, cfg), _second_adj

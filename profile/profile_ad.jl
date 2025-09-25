@@ -33,14 +33,15 @@ cfg = ACEConfig(Xs)
 @info("evaluation")
 @btime ACE.evaluate(LM, cfg);
 
-@info("der parameters")
-@btime ACE.grad_params(LM, cfg);
-@info("calculate gradient")
-@btime ACE.grad_config(LM, cfg);
-@info("Adjoint gradient")
-@btime ACE._rrule_evaluate(ones(Nprop), LM, cfg);
-@info("der grad according to params")
-@btime ACE.grad_params_config(LM, cfg)
+# @info("der parameters")
+# @btime ACE.grad_params(LM, cfg);  -- removed
+# @info("calculate gradient")
+# @btime ACE.grad_config(LM, cfg);  -- removed
+# @info("Adjoint gradient")
+# @btime ACE._rrule_evaluate(ones(Nprop), LM, cfg);  -- removed
+# @info("der grad according to params")
+# @btime ACE.grad_params_config(LM, cfg)  -- removed
+println("Gradient profiling disabled - derivative functionality removed")
 @info("Adjoint der grad according to params")
 adj = [ACE.DState(rr=rand(SVector{3, Float64})) for _ = 1:length(cfg)]
 @btime ACE.adjoint_EVAL_D(LM, LM.evaluator, cfg, adj)

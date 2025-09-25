@@ -4,7 +4,7 @@
 
 ##
 using ACE, Printf, Test, LinearAlgebra
-using ACE: evaluate, evaluate_d, evaluate_ed, read_dict, write_dict
+using ACE: evaluate, read_dict, write_dict
 using ACEbase.Testing: print_tf, println_slim, fdtest 
 using ACE.Testing
 
@@ -85,8 +85,6 @@ for p in 2:4
       for r in [3 * rand(10); [3.0]]
          u = rand(length(evaluate(B, r)))
          F = t -> dot( evaluate(B, t), u ) 
-         dF = t -> dot( evaluate_ed(B, t)[2], u)
-         print_tf(@test all( fdtest(F, dF, r; verbose=false) ))
       end
       println()
    end

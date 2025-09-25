@@ -1,8 +1,7 @@
 
 
 using ACE, Test, StaticArrays, BenchmarkTools, ACEbase, ACE.ACEbase024 
-using ACE: read_dict, write_dict, 
-           evaluate, evaluate_d, evaluate_dd
+using ACE: read_dict, write_dict, evaluate
 using ACEbase.Testing: println_slim, print_tf, fdtest, test_fio 
 using LinearAlgebra: norm 
 
@@ -31,10 +30,6 @@ for (f, g, rndx) in ff
    println_slim( @test f.(xx) ≈ g.(xx) )
    f1 = save_load(f)
    println_slim( @test f.(xx) ≈ f1.(xx) )
-   for ntest = 1:30 
-      x = rand() * 3 
-      print_tf(@test all(fdtest(x -> evaluate(f, x), x -> evaluate_d(f, x), x; verbose=false)))
-   end
    println() 
 end
 

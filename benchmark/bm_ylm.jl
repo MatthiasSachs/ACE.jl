@@ -3,7 +3,7 @@
 using StaticArrays, ACE, BenchmarkTools, LinearAlgebra
 using ACE.SphericalHarmonics
 SH = ACE.SphericalHarmonics
-using ACE: alloc_temp, alloc_temp_d, alloc_B, alloc_dB, evaluate!, evaluate_d!
+using ACE: alloc_temp, alloc_temp_d, alloc_B, alloc_dB
 
 @info("Spherical Harmonics Evaluation")
 
@@ -27,8 +27,6 @@ for L in [5, 10, 15]
    dY = alloc_dB(basis)
    suite["Complex SH($L) - evaluate!"] =
          (@benchmarkable evaluate!($Y, $tmp, $basis, $R))
-   suite["Complex SH($L) - evaluate_d!"] =
-         (@benchmarkable evaluate_d!($Y, $dY, $tmp_d, $basis, $R))
 
    rbasis = SH.RSHBasis(L)
    rtmp = alloc_temp(rbasis)
@@ -37,8 +35,6 @@ for L in [5, 10, 15]
    rdY = alloc_dB(rbasis)
    suite["Real SH($L) - evaluate!"] =
          (@benchmarkable evaluate!($rY, $rtmp, $rbasis, $R))
-   suite["Real SH($L) - evaluate_d!"] =
-         (@benchmarkable evaluate_d!($rY, $rdY, $rtmp_d, $rbasis, $R))
 end
 
 

@@ -61,7 +61,7 @@ export print_tf, test_fio, test_transform
 # ---------- code for transform tests
 
 import ForwardDiff
-import ACE: evaluate, evaluate_d, inv_transform
+import ACE: evaluate, inv_transform
 
 function test_transform(T, rrange, ntests = 100)
 
@@ -74,10 +74,6 @@ function test_transform(T, rrange, ntests = 100)
    # check inversion
    rr1 = inv_transform.(Ref(T), xx)
    print_tf(@test rr1 ≈ rr)
-   # check gradient
-   dx = evaluate_d.(Ref(T), rr)
-   adx = ForwardDiff.derivative.(Ref(r -> evaluate(T, r)), rr)
-   print_tf(@test dx ≈ adx)
 
    # TODO: check that the transform doesn't allocate
    @allocated begin

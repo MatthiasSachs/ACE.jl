@@ -40,28 +40,31 @@ standard = ACE.LinearACEModel(basis, c, evaluator = :standard)
 
 ##
 
-@info("Time grad_config with and without allocation")
-@info("This looks like a factor 4.5 of evaluate, so probably more we can do")
-g = ACE.acquire_grad_config!(standard, cfg)
-(@btime ACE.grad_config($standard, $cfg))
-(@btime ACE.grad_config!($g, $standard, $cfg))
+# @info("Time grad_config with and without allocation")
+# @info("This looks like a factor 4.5 of evaluate, so probably more we can do")
+# g = ACE.acquire_grad_config!(standard, cfg)  -- removed
+# (@btime ACE.grad_config($standard, $cfg))  -- removed
+# (@btime ACE.grad_config!($g, $standard, $cfg))  -- removed
+println("grad_config profiling disabled - derivative functionality removed")
 
 ##
 
-@info("grad_config vs rrule_evaluate")
-g1 = ACE._rrule_evaluate(ACE._One(), standard, cfg)
-g2 = ACE.grad_config(standard, cfg)
-@show g1 ≈ g2  
-@btime ACE.grad_config($standard, $cfg)
-@btime ACE._rrule_evaluate(ACE._One(), $standard, $cfg)
+# @info("grad_config vs rrule_evaluate")
+# g1 = ACE._rrule_evaluate(ACE._One(), standard, cfg)  -- removed
+# g2 = ACE.grad_config(standard, cfg)  -- removed
+# @show g1 ≈ g2   -- removed
+# @btime ACE.grad_config($standard, $cfg)  -- removed
+# @btime ACE._rrule_evaluate(ACE._One(), $standard, $cfg)  -- removed
+println("grad_config vs rrule_evaluate profiling disabled - derivative functionality removed")
 
 ##
 
-@info("Time grad_params with and without allocation")
-@info("a little surprising we dont get closer to factor 1?")
-g = ACE.acquire_grad_params!(standard, cfg)
-(@btime ACE.grad_params($standard, $cfg))
-(@btime ACE.grad_params!($g, $standard, $cfg))
+# @info("Time grad_params with and without allocation")
+# @info("a little surprising we dont get closer to factor 1?")
+# g = ACE.acquire_grad_params!(standard, cfg)  -- removed
+# (@btime ACE.grad_params($standard, $cfg))  -- removed
+# (@btime ACE.grad_params!($g, $standard, $cfg))  -- removed
+println("grad_params profiling disabled - derivative functionality removed")
 
 ##
 
@@ -80,10 +83,11 @@ model2 = ACE.LinearACEModel(basis, c_m, evaluator = :standard)
 
 @info(" - evaluate")
 @btime evaluate($model2, $cfg)
-@info(" - grad_params")
-@btime ACE.grad_params($model2, $cfg)
-@info(" - grad_config")
-@btime ACE.grad_config($model2, $cfg)
+# @info(" - grad_params")
+# @btime ACE.grad_params($model2, $cfg)  -- removed
+# @info(" - grad_config")
+# @btime ACE.grad_config($model2, $cfg)  -- removed
+println("Multi-property gradient profiling disabled - derivative functionality removed")
 w20 = randn(SVector{2, Float64})
 @info(" - _rrule_evaluate")
 @btime ACE._rrule_evaluate($w20, $model2, $cfg)

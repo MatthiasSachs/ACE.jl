@@ -43,8 +43,7 @@ function rrule_evaluate!(dB, dP, ::GetVal{VSYM}, X) where {VSYM}
    return dB 
 end
 
-grad_type_dP(TDP, ::GetVal{VSYM}, X) where {VSYM} = 
-      typeof(DState( NamedTuple{(VSYM,)}( (zero(TDP),) ) ))
+# grad_type_dP function removed - derivative functionality has been removed
 
 
 function rrule_evaluate(dP, ::GetVal{VSYM}, X) where {VSYM}
@@ -88,6 +87,5 @@ function rrule_evaluate!(dB, dP, ::GetNorm{VSYM}, X) where {VSYM}
    return dB 
 end
 
-grad_type_dP(TDP, ::GetNorm{VSYM}, X) where {VSYM} = 
-      typeof(DState( NamedTuple{(VSYM,)}( (zero(SVector{3,TDP}),) ) ))
+# grad_type_dP function removed - derivative functionality has been removed
 
