@@ -90,7 +90,7 @@ model2 = ACE.LinearACEModel(basis, c_m, evaluator = :standard)
 println("Multi-property gradient profiling disabled - derivative functionality removed")
 w20 = randn(SVector{2, Float64})
 @info(" - _rrule_evaluate")
-@btime ACE._rrule_evaluate($w20, $model2, $cfg)
+# @btime ACE._rrule_evaluate($w20, $model2, $cfg)  -- removed
 
 @info(" - adjoint_EVAL_D")
 _w2() = SVector(ACE.DState(rr = randn(SVector{3, Float64})), 

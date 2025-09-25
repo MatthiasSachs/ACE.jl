@@ -719,24 +719,7 @@ we need to remember what the Property is that we started from.
 """
 val(x) = x.val 
 
-function _rrule_val(dp, x)     # ∂/∂x (dp * x) = dp 
-   @assert dp isa Number 
-   return NoTangent(), dp
-end
-
-rrule(::typeof(val), x) = 
-         val(x), 
-         dp -> _rrule_val(dp, x)
-
-function rrule(::typeof(_rrule_val), dp, x)   # ∂/∂... (0 + dp * dq[2])
-      @assert dp isa Number 
-      function second_adj(dq)
-         @assert dq[1] == ZeroTangent() 
-         # @assert dq[2] isa Number  # TODO -> revisit this?!
-         return NoTangent(), dq[2], ZeroTangent()
-      end
-      return _rrule_val(dp, x), second_adj
-end 
+# _rrule_val and rrule functions removed - derivative functionality has been removed 
 
 import ChainRulesCore: ProjectTo
 

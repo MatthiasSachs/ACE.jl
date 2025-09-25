@@ -10,7 +10,6 @@ import ACE
 import ACE: evaluate!, 
             evaluate, 
             frule_evaluate, 
-            _rrule_evaluate,
             read_dict, write_dict,
             inv_transform,
             ACEBasis, ScalarACEBasis, 
@@ -22,7 +21,7 @@ using ForwardDiff: derivative
 
 import Base: ==
 
-import ChainRules: rrule, NoTangent
+# ChainRules imports removed - derivative functionality has been removed
 
 export orthpolys, transformed_jacobi, discrete_jacobi
 
@@ -331,37 +330,7 @@ import ACE: frule_evaluate
 
 
 
-function _rrule_evaluate(J::OrthPolyBasis, t::Number, 
-                         w::AbstractVector{<: Number})
-   maxn = length(w)
-   @assert maxn <= length(J)
-
-   P1 = J.A[1] * _fcut_(J.pl, J.tl, J.pr, J.tr, t)
-   dP1 = J.A[1] * _fcut_d_(J.pl, J.tl, J.pr, J.tr, t)
-   a = dP1 * w[1] 
-   if maxn == 1 
-      return a
-   end 
-
-   α = J.A[2] * t + J.B[2]
-   P2 = α * P1
-   dP2 = α * dP1 + J.A[2] * P1
-   a += dP2 * w[2] 
-   if maxn == 2
-      return a 
-   end 
-
-   @inbounds for n = 3:maxn
-      α = J.A[n] * t + J.B[n]
-      P3 = α * P2 + J.C[n] * P1
-      dP3 = α * dP2 + J.C[n] * dP1 + J.A[n] * P2
-      a += dP3 * w[n] 
-      P2, P1 = P3, P2
-      dP2, dP1 = dP3, dP2
-   end
-
-   return a
-end
+# _rrule_evaluate function removed - derivative functionality has been removed
 
 
 end

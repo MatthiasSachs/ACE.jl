@@ -10,7 +10,7 @@
 # l : θ-degree
 # m : z-degree
 
-import ACE: alloc_B, alloc_dB
+import ACE: alloc_B
 import Base: ==
 import JuLIP: alloc_temp, read_dict, write_dict
 

@@ -52,7 +52,7 @@ _idxsyms(basis::XScal1pBasis{ISYMS}) where {ISYMS} = ISYMS
 
 getval(X, basis::XScal1pBasis) = getval(X, basis.fval)
 
-getval_d(X, basis::XScal1pBasis) = getval_d(X, basis.fval)
+# getval_d(X, basis::XScal1pBasis) = getval_d(X, basis.fval)
 
 
 rand_radial(basis::XScal1pBasis) = rand_radial(basis.P)
@@ -226,31 +226,31 @@ function evaluate!(B, basis::XScal1pBasis, x::Number)
 end 
 
 
-function evaluate_d!(dB, basis::XScal1pBasis, X::AbstractState)
-   TDX = eltype(dB)
-   x = getval(X, basis)
-   dP = acquire_dB!(basis.P, x)
-   evaluate_d!(dP, basis.P, x)
-   dx = getval_d(X, basis)
-   dB[:] .= TDX.( Ref(dx) .* (basis.coeffs * dP) )
-   release_dB!(basis.P, dP)
-   return dB
-end
+# function evaluate_d!(dB, basis::XScal1pBasis, X::AbstractState)
+#    TDX = eltype(dB)
+#    x = getval(X, basis)
+#    dP = acquire_dB!(basis.P, x)
+#    evaluate_d!(dP, basis.P, x)
+#    dx = getval_d(X, basis)
+#    dB[:] .= TDX.( Ref(dx) .* (basis.coeffs * dP) )
+#    release_dB!(basis.P, dP)
+#    return dB
+# end
 
-function evaluate_ed!(B, dB, basis::XScal1pBasis, X::AbstractState)
-   TDX = eltype(dB)
-   x = getval(X, basis)
-   P = acquire_B!(basis.P, x)
-   dP = acquire_dB!(basis.P, x)
-   evaluate!(P, basis.P, x)
-   evaluate_d!(dP, basis.P, x)
-   mul!(B, basis.coeffs, P)
-   dx = getval_d(X, basis)
-   dB[:] .= TDX.( Ref(dx) .* (basis.coeffs * dP) )
-   release_B!(basis.P, P)
-   release_dB!(basis.P, dP)
-   return B, dB
-end
+# function evaluate_ed!(B, dB, basis::XScal1pBasis, X::AbstractState)
+#    TDX = eltype(dB)
+#    x = getval(X, basis)
+#    P = acquire_B!(basis.P, x)
+#    dP = acquire_dB!(basis.P, x)
+#    evaluate!(P, basis.P, x)
+#    evaluate_d!(dP, basis.P, x)
+#    mul!(B, basis.coeffs, P)
+#    dx = getval_d(X, basis)
+#    dB[:] .= TDX.( Ref(dx) .* (basis.coeffs * dP) )
+#    release_B!(basis.P, P)
+#    release_dB!(basis.P, dP)
+#    return B, dB
+# end
 
 
 # *** TODO 
@@ -261,45 +261,3 @@ end
 #    return _scal1pbasis_grad.(Ref(TDX), Ref(basis), ddP_n)
 # end
 
-
-#=   *** TODO 
-# -------------- AD codes 
-
-import ChainRules: rrule, ZeroTangent, NoTangent
-
-function _rrule_evaluate(basis::Scal1pBasis, X::AbstractState, 
-                         w::AbstractVector{<: Number})
-   @assert _varidx(basis) == 1
-   x = _val(X, basis)
-   a = _rrule_evaluate(basis.P, x, real.(w))
-   TDX = ACE.dstate_type(a, X)
-   return TDX( NamedTuple{(_varsym(basis),)}( (a,) ) )
-end
-
-rrule(::typeof(evaluate), basis::Scal1pBasis, X::AbstractState) = 
-                  evaluate(basis, X), 
-                  w -> (NoTangent(), NoTangent(), _rrule_evaluate(basis, X, w))
-
-             
-                  
-function _rrule_evaluate_d(basis::Scal1pBasis, X::AbstractState, 
-                           w::AbstractVector)
-   @assert _varidx(basis) == 1
-   x = _val(X, basis)
-   w1 = [ _val(w, basis) for w in w ]
-   a = _rrule_evaluate_d(basis.P, x, w1)
-   TDX = ACE.dstate_type(a, X)
-   return TDX( NamedTuple{(_varsym(basis),)}( (a,) ) )
-end
-
-function rrule(::typeof(evaluate_d), basis::Scal1pBasis, X::AbstractState)
-   @assert _varidx(basis) == 1
-   x = _val(X, basis)
-   dB_ = evaluate_d(basis.P, x)
-   TDX = dstate_type(valtype(basis, X), X)
-   dB = [ TDX( NamedTuple{(_varsym(basis),)}( (dx,) ) )  for dx in dB_ ]
-   return dB, 
-          w -> (NoTangent(), NoTangent(), _rrule_evaluate_d(basis, X, w))
-end
-
-=#

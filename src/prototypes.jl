@@ -82,4 +82,4 @@ b = evaluate(B, a)
 # ∂b∂x = rrule_evaluate(∂b∂a, A, x)  -- removed
 ```
 """
-function rrule_evaluate! end 
+# rrule_evaluate! function prototype removed - derivative functionality has been removed 

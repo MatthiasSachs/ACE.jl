@@ -1,8 +1,8 @@
 
 using ACE, Printf, BenchmarkTools
 
-using ACE: evaluate, evaluate!, evaluate_d, evaluate_d!
-using ACE.ACEbase024: acquire_B!, acquire_dB!
+using ACE: evaluate, evaluate!
+using ACE.ACEbase024: acquire_B! 
 
 TX = ACE.PositionState{Float64}
 B1p = ACE.Utils.RnYlm_1pbasis()
@@ -25,9 +25,7 @@ wL = 1.5
 
 Agroup = BenchmarkGroup()
 Agroup["evaluate"] = BenchmarkGroup()
-Agroup["evaluate_d"] = BenchmarkGroup()
 Agroup["evaluate!"] = BenchmarkGroup()
-Agroup["evaluate_d!"] = BenchmarkGroup()
 
 for deg in Adegrees 
    local B1p
@@ -37,21 +35,16 @@ for deg in Adegrees
                                  maxL = ceil(Int, deg / wL), 
                                  Bsel = Bsel)
    A = evaluate(B1p, cfg)
-   dA = evaluate_d(B1p, cfg)
 
    Agroup["evaluate"][deg] = @benchmarkable evaluate($B1p, $cfg)   
-   Agroup["evaluate_d"][deg] = @benchmarkable evaluate_d($B1p, $cfg)   
    Agroup["evaluate!"][deg] = @benchmarkable evaluate!($A, $B1p, $cfg)   
-   Agroup["evaluate_d!"][deg] = @benchmarkable evaluate_d!($dA, $B1p, $cfg)
 end 
 
 ##
 
 Bgroup = BenchmarkGroup()
 Bgroup["evaluate"] = BenchmarkGroup()
-Bgroup["evaluate_d"] = BenchmarkGroup()
 Bgroup["evaluate!"] = BenchmarkGroup()
-Bgroup["evaluate_d!"] = BenchmarkGroup()
 
 for ord = keys(degrees), deg in degrees[ord]
    local B1p
@@ -62,12 +55,9 @@ for ord = keys(degrees), deg in degrees[ord]
                                  Bsel = Bsel)
    basis = ACE.SymmetricBasis(ACE.Invariant(), B1p, Bsel)
    B = acquire_B!(basis, cfg)
-   dB = acquire_dB!(basis, cfg)
 
-   Bgroup["evaluate"][ord, deg] = @benchmarkable evaluate($basis, $cfg)   
-   Bgroup["evaluate_d"][ord, deg] = @benchmarkable evaluate_d($basis, $cfg)   
+   Bgroup["evaluate"][ord, deg] = @benchmarkable evaluate($basis, $cfg)    
    Bgroup["evaluate!"][ord, deg] = @benchmarkable evaluate!($B, $basis, $cfg)   
-   Bgroup["evaluate_d!"][ord, deg] = @benchmarkable evaluate_d!($dB, $basis, $cfg)
 end
 
 ##

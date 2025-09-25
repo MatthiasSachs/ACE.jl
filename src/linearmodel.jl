@@ -148,8 +148,7 @@ end
 
 # ------------------- an rrule for evaluating a linear model
 
-import ChainRules 
-import ChainRules: rrule, @thunk, NoTangent, @not_implemented
+# ChainRules imports removed - derivative functionality has been removed
 
 
 function _adj_evaluate(dp, model::ACE.LinearACEModel, cfg)
@@ -159,49 +158,7 @@ function _adj_evaluate(dp, model::ACE.LinearACEModel, cfg)
    # return NoTangent(), gp, _rrule_evaluate(dp, model, cfg)  -- removed
 end
 
-# this is monkey-patching the rotten rrule inside of ACE
-# ... and should replace that rrule. ALso introduce thunks to prevent 
-#     evaluating more than we need.
-function ChainRules.rrule(::typeof(evaluate), model::ACE.LinearACEModel, cfg::AbstractConfiguration)
-   return evaluate(model, cfg), 
-          dp -> _adj_evaluate(dp, model, cfg)
-end
+# ChainRules.rrule function removed - derivative functionality has been removed
 
 
-# rrule for the rrule ... this enables mixed second derivatives of the form 
-#   D^2 * / D p Dcfg. 
-# the code double-checks that indeed only those derivatives are needed! 
-function ChainRules.rrule(::typeof(_adj_evaluate), dp, model::ACE.LinearACEModel, cfg)
-   # adj = (_, g_params, g_cfg) 
-   #   D(dq[1] * _ + dq[2] * g_params + dq[3] * g_cfg) / D(dp, model, cfg)
-   #       0 = ^^^    ^^^ = 0
-   #   D( dq[3] * g_cfg ) / D( dq, model, cfg )
-   # but for simplicity ignore Dcfg for now (not yet implemented)
-   # recall also that g_cfg = D (dp * eval(model, cfg)) / D cfg
-   # dp should be a vector of the same length as the number of properties
-
-   function _second_adj(dq_)
-      # adj = (NoTangent(), gp1, g_cfg) 
-      # here we assume that only g_cfg was used, which means that 
-      # dq_[3] = force-like vector and dq_[2] == NoTangent() 
-      @assert dq_[1] == dq_[2] == ZeroTangent()
-      @assert dq_[3] isa AbstractVector{<: ACE.DState}
-      @assert length(dq_[3]) == length(cfg)
-      dq = dq_[3]  # Vector of DStates
-      
-      # adj_n = ∑_j dq_j ⋅ ∂B_k / ∂r_j * θ_nk
-      # dp ⋅ adj = ∑_n ∑_j dq_j ⋅ ∂B_k / ∂r_j * θ_nk * dp_n 
-      # grad[k] = ∑_j dq_j ⋅ ∂B_k / ∂r_j
-      grad = ACE.adjoint_EVAL_D(model, model.evaluator, cfg, dq)
-
-      # gradient w.r.t parameters: 
-      # grad_params = [ gg * dp for gg in grad ]  -- removed
-
-      # gradient w.r.t. dp    # TODO: remove the |> Vector? 
-      grad_dp = sum( model.c[k] * grad[k] for k = 1:length(grad) )  |> Vector 
-
-      return NoTangent(), grad_dp, NoTangent(), NoTangent()
-   end
-
-   return _adj_evaluate(dp, model, cfg), _second_adj
-end
+# ChainRules.rrule function for _adj_evaluate removed - derivative functionality has been removed

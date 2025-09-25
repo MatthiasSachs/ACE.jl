@@ -1,8 +1,7 @@
 using ACE, StaticArrays, BenchmarkTools, Printf
 
-using Zygote: gradient
-using ACE: evaluate, evaluate!, evaluate_d, evaluate_d!
-using ACE.ACEbase024: acquire_B!, acquire_dB!
+using ACE: evaluate, evaluate!
+using ACE.ACEbase024: acquire_B!
 
 TX = ACE.PositionState{Float64}
 B1p = ACE.Utils.RnYlm_1pbasis()
@@ -46,12 +45,7 @@ Pgroup = BenchmarkGroup()
 Pgroup["set_params!"] = BenchmarkGroup()
 Pgroup["evaluate"] = BenchmarkGroup()
 
-#only ACE
-Pgroup["grad_params"] = BenchmarkGroup()
-Pgroup["grad_config"] = BenchmarkGroup()
-Pgroup["_rrule_evaluate"] = BenchmarkGroup()
-Pgroup["grad_params_config"] = BenchmarkGroup()
-Pgroup["adjoint_EVAL_D"] = BenchmarkGroup()
+
 
 # #zygote calls
 # Pgroup["site_energy"] = BenchmarkGroup()
@@ -86,17 +80,6 @@ for numprops in Pnumprops
    
 
 
-   #ACE native calls for derivatives
-   Pgroup["grad_params"][numprops] = @benchmarkable ACE.grad_params($LM, $cfg)
-   Pgroup["grad_config"][numprops] = @benchmarkable ACE.grad_config($LM, $cfg)
-   dp = ones(numprops) #the forces pullback input
-   Pgroup["_rrule_evaluate"][numprops] = @benchmarkable ACE._rrule_evaluate($dp, $LM, $cfg)
-   Pgroup["grad_params_config"][numprops] = @benchmarkable ACE.grad_params_config($LM, $cfg)
-   dq = [ACE.DState(rr=rand(SVector{3, Float64})) for _ = 1:length(cfg)] #the adjoint
-   Pgroup["adjoint_EVAL_D"][numprops] = @benchmarkable ACE.adjoint_EVAL_D($LM, $LM.evaluator, $cfg, $dq)
-
-
-
    # #Zygote calls for derivatives
    # Pgroup["site_energy"][numprops] = @benchmarkable site_energy($LM, $cfg)
    # Pgroup["Zygote_grad_params"][numprops] = @benchmarkable gradient(x->site_energy(x,$cfg), $LM)
@@ -126,12 +109,6 @@ Bgroup = BenchmarkGroup()
 Bgroup["set_params!"] = BenchmarkGroup()
 Bgroup["evaluate"] = BenchmarkGroup()
 
-#only ACE
-Bgroup["grad_params"] = BenchmarkGroup()
-Bgroup["grad_config"] = BenchmarkGroup()
-Bgroup["_rrule_evaluate"] = BenchmarkGroup()
-Bgroup["grad_params_config"] = BenchmarkGroup()
-Bgroup["adjoint_EVAL_D"] = BenchmarkGroup()
 
 # #zygote calls
 # Bgroup["site_energy"] = BenchmarkGroup()
@@ -167,15 +144,7 @@ for ord = keys(degrees), deg in degrees[ord]
    
 
 
-   #ACE native calls for derivatives
-   Bgroup["grad_params"][ord, deg] = @benchmarkable ACE.grad_params($LM, $cfg)
-   Bgroup["grad_config"][ord, deg] = @benchmarkable ACE.grad_config($LM, $cfg)
-   dp = ones(Nprop) #the forces pullback input
-   Bgroup["_rrule_evaluate"][ord, deg] = @benchmarkable ACE._rrule_evaluate($dp, $LM, $cfg)
-   Bgroup["grad_params_config"][ord, deg] = @benchmarkable ACE.grad_params_config($LM, $cfg)
-   dq = [ACE.DState(rr=rand(SVector{3, Float64})) for _ = 1:length(cfg)] #the adjoint
-   Bgroup["adjoint_EVAL_D"][ord, deg] = @benchmarkable ACE.adjoint_EVAL_D($LM, $LM.evaluator, $cfg, $dq)
-
+   
 
 
    # #Zygote calls for derivatives

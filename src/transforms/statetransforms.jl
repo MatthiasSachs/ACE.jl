@@ -3,7 +3,7 @@ import ACE
 import ACE: evaluate, evaluate_d, evaluate_dd,  
             write_dict, read_dict, 
             DState, 
-            rrule_evaluate!, frule_evaluate! 
+            frule_evaluate! 
 
 using LinearAlgebra: I, norm  
 
@@ -29,28 +29,9 @@ getval(X, ::GetVal{VSYM}) where {VSYM} = getproperty(X, VSYM)
 _one(x::Number) = one(x)
 _one(x::SVector{3, T}) where {T}  = SMatrix{3, 3, T}(I)
 
-getval_d(X, ::GetVal{VSYM}) where {VSYM} = 
-      DState( NamedTuple{(VSYM,)}( (_one(getproperty(X, VSYM)),) ) )
-
 get_symbols(::GetVal{VSYM}) where {VSYM} = (VSYM,)
 
-function rrule_evaluate!(dB, dP, ::GetVal{VSYM}, X) where {VSYM}
-   x = getproperty(X, VSYM)
-   TDX = eltype(dB)
-   for n = 1:length(dB)
-      dB[n] = TDX(  DState( NamedTuple{(VSYM,)}( ( dP[n], ) ) ) )
-   end
-   return dB 
-end
 
-# grad_type_dP function removed - derivative functionality has been removed
-
-
-function rrule_evaluate(dP, ::GetVal{VSYM}, X) where {VSYM}
-   x = getproperty(X, VSYM)
-   return [ DState( NamedTuple{(VSYM,)}( ( dP[n], ) ) )
-            for n = 1:length(dP) ]
-end
       
 # TODO - this is incomplete for now 
 # struct GetVali{VSYM, IND} <: StaticGet end 
@@ -77,15 +58,7 @@ write_dict(fval::StaticGet) = Dict("__id__" => "ACE_StaticGet",
 read_dict(::Val{:ACE_StaticGet}, D::Dict) = eval( Meta.parse(D["expr"]) )()
 
 
-function rrule_evaluate!(dB, dP, ::GetNorm{VSYM}, X) where {VSYM}
-   x = getproperty(X, VSYM)
-   dx = x/norm(x)
-   TDX = eltype(dB)
-   for n = 1:length(dB)
-      dB[n] = TDX(  DState( NamedTuple{(VSYM,)}( ( dx * dP[n], ) ) ) )
-   end
-   return dB 
-end
+# rrule_evaluate! function removed - derivative functionality has been removed
 
 # grad_type_dP function removed - derivative functionality has been removed
 

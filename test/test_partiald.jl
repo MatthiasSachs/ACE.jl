@@ -3,7 +3,7 @@
 
 using ACE
 using Printf, Test, LinearAlgebra, StaticArrays
-using ACE: evaluate, evaluate_d, Rn1pBasis, Ylm1pBasis,
+using ACE: evaluate, Rn1pBasis, Ylm1pBasis,
            Product1pBasis, Scal1pBasis
 using Random: shuffle
 using ACEbase.Testing: fdtest, print_tf
@@ -79,8 +79,9 @@ println(@test( dB ≈ dB_x + dB_rr ))
 
 ## 
 
+# ChainRules test code removed - derivative functionality has been removed
+#= 
 # try out a chainrule? 
-using Zygote
 import ChainRules: rrule, NoTangent, ZeroTangent
 using ACE: LinearACEModel, evaluate
 
@@ -96,41 +97,9 @@ function x_features(Rs)
    return ACEConfig(Xs)
 end
 
-function rrule(::typeof(x_features), Rs)
-   f(r) = exp(- r) 
-   df(r) = - exp(-r)
-   function x_features_pullback(dP, Rs)
-      N = length(Rs)
-      g = [ dP[i].rr for i = 1:N ]
-      for i = 1:N, j = 1:N
-         dxi = dP[i].x
-         if j != i 
-            rr_ij = Rs[j] - Rs[i]
-            r_ij = norm(rr_ij)
-            g[j] += dxi * df(r_ij) * (rr_ij / r_ij)
-            g[i] -= dxi * df(r_ij) * (rr_ij / r_ij)
-         end 
-      end 
-      return NoTangent(), g
-   end
-   return x_features(Rs), dp -> x_features_pullback(dp, Rs)
-end 
-
 eval_model(Rs) = ACE.val(evaluate( model, x_features(Rs) ))
 
 Rs = 2.5 * randn(SVector{3, Float64}, 10)
 eval_model(Rs)
+=#
 
-
-##
-
-Zygote.gradient(eval_model, Rs)[1]
-
-# Us = randn(SVector{3, Float64}, length(Rs))
-
-__floats(Rs) = collect(reinterpret(Float64, Rs))
-__vecs(x) = collect(reinterpret(SVector{3, Float64}, x))
-x0 = __floats(Rs)
-F = x -> eval_model(__vecs(x))
-dF = x -> Zygote.gradient(eval_model, __vecs(x))[1] |> __floats
-println(@test all(ACEbase.Testing.fdtest(F, dF, x0)))
