@@ -103,17 +103,17 @@ println()
 
 ##
 
-@info(" ... derivatives")
-_rrval(x::ACE.XState) = x.rr
-for ntest = 1:30
-   Us = randn(SVector{3, Float64}, length(Xs))
-   C = randn(typeof(φ.val), length(basis))
-   F = t -> sum( sum(c .* b.val)
-                 for (c, b) in zip(C, ACE.evaluate(basis, ACEConfig(Xs + t[1] * Us))) )
-   dF = t -> [ sum( sum(c .* db)
-                    for (c, db) in zip(C, _rrval.(ACE.evaluate_d(basis, ACEConfig(Xs + t[1] * Us))) * Us) ) ]
-   print_tf(@test fdtest(F, dF, [0.0], verbose=false))
-end
-println()
+# @info(" ... derivatives")
+# _rrval(x::ACE.XState) = x.rr
+# for ntest = 1:30
+#    Us = randn(SVector{3, Float64}, length(Xs))
+#    C = randn(typeof(φ.val), length(basis))
+#    F = t -> sum( sum(c .* b.val)
+#                  for (c, b) in zip(C, ACE.evaluate(basis, ACEConfig(Xs + t[1] * Us))) )
+#    dF = t -> [ sum( sum(c .* db)
+#                     for (c, db) in zip(C, _rrval.(ACE.evaluate_d(basis, ACEConfig(Xs + t[1] * Us))) * Us) ) ]
+#    print_tf(@test fdtest(F, dF, [0.0], verbose=false))
+# end
+# println()
 
 ##

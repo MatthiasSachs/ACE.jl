@@ -54,16 +54,16 @@ grad_params_config_ref(basis, cfg, c) = evaluate_d(basis, cfg)
 
 evaluate(naive, cfg) ≈  evaluate(standard, cfg)
 evaluate_ref(basis, cfg, c) ≈ evaluate(naive, cfg)
-grad_params(naive, cfg) ≈ grad_params(standard, cfg)
-grad_config(naive, cfg) ≈ grad_config(standard, cfg)
+# grad_params(naive, cfg) ≈ grad_params(standard, cfg)
+# grad_config(naive, cfg) ≈ grad_config(standard, cfg)
 
 # (fun, funref, str) = (ACE.grad_params_config, grad_params_config_ref, "grad_params_config")
 
 for (fun, funref, str) in [ 
          (evaluate, evaluate_ref, "evaluate"), 
-         (ACE.grad_config, grad_config_ref, "grad_config"), 
-         (ACE.grad_params, grad_params_ref, "grad_params"), 
-         (ACE.grad_params_config, grad_params_config_ref, "grad_params_config"), 
+         # (ACE.grad_config, grad_config_ref, "grad_config"), 
+         # (ACE.grad_params, grad_params_ref, "grad_params"), 
+         # (ACE.grad_params_config, grad_params_config_ref, "grad_params_config"), 
       ]
    @info("Testing `$str` for different model evaluators")
    for ntest = 1:30
@@ -87,8 +87,8 @@ for _ = 1:20
    local cfg 
    cfg = randconfig(B1p, rand(8:15))
    print_tf(@test evaluate(standard, cfg) ≈ evaluate(standard, cfg.Xs))
-   print_tf(@test grad_config(standard, cfg) ≈ grad_config(standard, cfg.Xs))
-   print_tf(@test grad_params(standard, cfg) ≈ grad_params(standard, cfg.Xs))
+   # print_tf(@test grad_config(standard, cfg) ≈ grad_config(standard, cfg.Xs))
+   # print_tf(@test grad_params(standard, cfg) ≈ grad_params(standard, cfg.Xs))
 end
 println() 
 
@@ -116,35 +116,35 @@ for ntest = 1:30
 end
 println() 
 
+# ##
+# @info("test gradients of LinearACEModel of equivariant vector")
+
+# BB = evaluate(basis, cfg)
+# c = randn(length(BB)) ./ (1:length(BB)).^2
+# model = ACE.LinearACEModel(basis, c, evaluator = :standard)
+
+# cfg = randconfig(B1p, 10)
+# evaluate(model, cfg)
+
+# dBB = evaluate_d(basis, cfg)
+# val1 = sum(c[i] * dBB[i,:] for i = 1:length(basis))
+# val2 = grad_config(model, cfg)
+# println_slim( @test( val1 ≈ val2 ))
+
 ##
-@info("test gradients of LinearACEModel of equivariant vector")
 
-BB = evaluate(basis, cfg)
-c = randn(length(BB)) ./ (1:length(BB)).^2
-model = ACE.LinearACEModel(basis, c, evaluator = :standard)
+# @info("And a finite-difference test for good measure")
 
-cfg = randconfig(B1p, 10)
-evaluate(model, cfg)
-
-dBB = evaluate_d(basis, cfg)
-val1 = sum(c[i] * dBB[i,:] for i = 1:length(basis))
-val2 = grad_config(model, cfg)
-println_slim( @test( val1 ≈ val2 ))
-
-##
-
-@info("And a finite-difference test for good measure")
-
-for ntest = 1:30 
-   w = randn(3)
-   Us = randn(SVector{3, Float64}, length(cfg))
-   cfg.Xs + 0.01 * Us
-   F = t -> real(w' * evaluate(model, ACEConfig(cfg.Xs + t * Us)).val)
-   F(0.01)
-   dF = t -> sum( real(w' * gi.rr * Ui) for (Ui, gi) in zip(Us, 
-                           grad_config(model, ACEConfig(cfg.Xs + t * Us))) )
-   dF(0.01)
-   print_tf(@test all(ACEbase.Testing.fdtest(F, dF, 0.0, verbose=false)))
-end
-println() 
+# for ntest = 1:30 
+#    w = randn(3)
+#    Us = randn(SVector{3, Float64}, length(cfg))
+#    cfg.Xs + 0.01 * Us
+#    F = t -> real(w' * evaluate(model, ACEConfig(cfg.Xs + t * Us)).val)
+#    F(0.01)
+#    dF = t -> sum( real(w' * gi.rr * Ui) for (Ui, gi) in zip(Us, 
+#                            grad_config(model, ACEConfig(cfg.Xs + t * Us))) )
+#    dF(0.01)
+#    print_tf(@test all(ACEbase.Testing.fdtest(F, dF, 0.0, verbose=false)))
+# end
+# println() 
 

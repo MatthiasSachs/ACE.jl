@@ -1,7 +1,7 @@
 
 ##
 using ACE, Printf, Test, LinearAlgebra
-using ACE: evaluate, evaluate_d, read_dict, write_dict
+using ACE: evaluate, read_dict, write_dict
 using ACE.Testing
 
 verbose = false

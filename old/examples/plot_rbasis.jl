@@ -3,7 +3,7 @@
 
 using ACE, Printf, Test, LinearAlgebra
 using ACE: PolyTransform, rbasis,
-using JuLIP: evaluate, evaluate_d
+using JuLIP: evaluate
 using ACE.JacobiPolys: Jacobi
 using PyPlot
 

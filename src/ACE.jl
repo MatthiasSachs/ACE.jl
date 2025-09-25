@@ -26,15 +26,7 @@ import .ACEbase024: ACEBasis, ScalarACEBasis, OneParticleBasis, Discrete1pBasis,
 import .ACEbase024: ACEBasis, acquire!, release! 
 using .ACEbase024: acquire!, release!, VectorPool
 
-# import ACEbase: evaluate, evaluate_d, 
-#                 ACEBasis, acquire!, release! 
 
-# using ACEbase.ObjectPools: acquire!, release!, VectorPool
-using ForwardDiff: derivative
-import ChainRules: rrule, ZeroTangent, NoTangent
-
-
-# TODO: gradtype should have a standard fallback 
 
 
 abstract type AbstractACEModel end 
@@ -47,12 +39,6 @@ function coco_filter end
 function coco_dot end
 function coco_type end 
 
-# TODO 
-# * decide on rand(basis) interface
-
-# * move these the following definitions to ACEbase
-function _rrule_evaluate end 
-function _rrule_evaluate_d end 
 
 getlabel(basis::ACEBasis) = hasproperty(basis, :label) ? basis.label : ""
 
@@ -89,7 +75,6 @@ include("utils/auxiliary.jl")
 include("transforms/lambdas.jl")
 
 include("utils/pools.jl")
-include("ad.jl")
 include("chain.jl")
 
 
@@ -170,17 +155,9 @@ include("testing/testing.jl")
 evaluate(basis::SymmetricBasis, Xs::AbstractVector) = 
       evaluate(basis, ACEConfig(Xs))
 
-evaluate_d(basis::SymmetricBasis, Xs::AbstractVector) = 
-      evaluate_d(basis, ACEConfig(Xs))
-
 evaluate(model::LinearACEModel, Xs::AbstractVector) = 
       evaluate(model, ACEConfig(Xs))
 
-grad_config(model::LinearACEModel, Xs::AbstractVector) = 
-      grad_config(model, ACEConfig(Xs))
-
-grad_params(model::LinearACEModel, Xs::AbstractVector) = 
-      grad_params(model, ACEConfig(Xs))
 
 end # module
 

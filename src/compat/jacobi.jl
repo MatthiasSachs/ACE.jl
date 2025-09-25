@@ -113,34 +113,4 @@ function evaluate!(P::AbstractVector, tmp, J::Jacobi, x)
 end
 
 
-function evaluate_d!(P::AbstractVector, dP::AbstractVector, tmp,
-                    J::Jacobi, x::Number)
-   N = maxdegree(J)
-   @assert length(P) >= N+1
-   @assert length(dP) >= N+1
-   @assert N+1 <= min(length(P), length(dP))
-   α, β = J.α, J.β
-   P[1] = 1
-   dP[1] = 0
-   if N > 0
-      P[2] = (α+1) + 0.5 * (α+β+2) * (x-1)
-      dP[2] = 0.5 * (α+β+2)
-      if N > 1
-         @inbounds for n = 2:N
-            c1 = J.A[n] * x + J.B[n]
-            c2 = J.C[n]
-            P[n+1] = c1 * P[n] + c2 * P[n-1]
-            dP[n+1] = J.A[n] * P[n] + c1 * dP[n] + J.C[n] * dP[n-1]
-         end
-      end
-   end
-   if !isempty(J.nrm)  # if we want an orthonormal basis
-      P .= P .* J.nrm
-      dP .= dP .* J.nrm
-   end
-   # return P, dP
-   return dP
-end
-
-
 end

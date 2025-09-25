@@ -70,14 +70,6 @@ function getval_d(X, ::GetNorm{VSYM}) where {VSYM}
    return DState( NamedTuple{(VSYM,)}( (x/norm(x),) ) )
 end 
 
-function evaluate_dd(::GetNorm{VSYM}, X) where {VSYM}
-   𝐫 = getproperty(X,VSYM)
-   r = norm(𝐫)
-   𝐫̂ = 𝐫 / r
-   ddx = (I - 𝐫̂ * 𝐫̂') / r
-   return DState( NamedTuple{(VSYM,)}( (ddx,) ) )
-end 
-
 
 get_symbols(::GetNorm{VSYM}) where {VSYM} = (VSYM,)
 

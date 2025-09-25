@@ -30,7 +30,7 @@ for φ in [ACE.Invariant(),ACE.EuclideanVector(Float64),ACE.EuclideanMatrix(Floa
     ##
 
     BB = evaluate(basis, cfg)
-    dBB = ACE.evaluate_d(basis, cfg)
+    # dBB = ACE.evaluate_d(basis, cfg)
 
     c_m = rand(SVector{3,Float64}, length(BB))
 
@@ -64,33 +64,33 @@ for φ in [ACE.Invariant(),ACE.EuclideanVector(Float64),ACE.EuclideanMatrix(Floa
     end
     println()
 
-    ##
+    # ##
 
-    @info("grad_params")
+    # @info("grad_params")
 
-    multiGradP = ACE.grad_params(multiProp,cfg)
+    # multiGradP = ACE.grad_params(multiProp,cfg)
 
-    println_slim(@test all(isdiag, multiGradP))
+    # println_slim(@test all(isdiag, multiGradP))
 
-    for i in 1:length(c_m[1])
-        singl = ACE.grad_params(singlProp[i], cfg)
-        mult_i = [ multiGradP[j][i,i] for j = 1:length(c_m)] 
-        print_tf(@test(singl ≈ mult_i))
-    end
-    println()
+    # for i in 1:length(c_m[1])
+    #     singl = ACE.grad_params(singlProp[i], cfg)
+    #     mult_i = [ multiGradP[j][i,i] for j = 1:length(c_m)] 
+    #     print_tf(@test(singl ≈ mult_i))
+    # end
+    # println()
 
-    ##
+    # ##
 
-    @info("grad_config")
+    # @info("grad_config")
 
-    mgcfg = ACE.grad_config(multiProp, cfg)
+    # mgcfg = ACE.grad_config(multiProp, cfg)
 
-    for i in 1:length(c_m[1])
-        singl = ACE.grad_config(singlProp[i],cfg)
-        mult_i = [ g[i] for g in mgcfg ]
-        print_tf(@test(singl ≈ mult_i))
-    end
-    println()
+    # for i in 1:length(c_m[1])
+    #     singl = ACE.grad_config(singlProp[i],cfg)
+    #     mult_i = [ g[i] for g in mgcfg ]
+    #     print_tf(@test(singl ≈ mult_i))
+    # end
+    # println()
 end
 ##
 

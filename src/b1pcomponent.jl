@@ -199,12 +199,6 @@ end
 evaluate(basis::B1pComponent, X::AbstractState) = 
          evaluate(basis.basis, evaluate(basis.fval, X))
 
-function evaluate_d(basis::B1pComponent, X::AbstractState) 
-   B, dB = evaluate_ed(basis, X)
-   release!(B)
-   return dB 
-end 
-
 function evaluate_ed(basis::B1pComponent, X::AbstractState) 
    x = evaluate(basis.fval, X)
    B, dP = evaluate_ed(basis.basis, x)
@@ -247,15 +241,6 @@ rrule(::typeof(evaluate), basis::Scal1pBasis, X::AbstractState) =
 
              
                   
-function _rrule_evaluate_d(basis::Scal1pBasis, X::AbstractState, 
-                           w::AbstractVector)
-   @assert _varidx(basis) == 1
-   x = _val(X, basis)
-   w1 = [ _val(w, basis) for w in w ]
-   a = _rrule_evaluate_d(basis.P, x, w1)
-   TDX = ACE.dstate_type(a, X)
-   return TDX( NamedTuple{(_varsym(basis),)}( (a,) ) )
-end
 
 function rrule(::typeof(evaluate_d), basis::Scal1pBasis, X::AbstractState)
    @assert _varidx(basis) == 1

@@ -10,12 +10,10 @@ to enable this.
 
 Derived types must implement 
 * `_inner_evaluate`
-* `_inner_evaluate_d`
 """
 abstract type B1pMultiplier{T} <: OneParticleBasis{T} end 
 
 function _inner_evaluate end 
-function _inner_evaluate_d end 
 
 function evaluate!(A, mult::B1pMultiplier, X::AbstractState) 
     A[1] = _inner_evaluate(mult, X)

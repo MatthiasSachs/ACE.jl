@@ -224,12 +224,6 @@ function evaluate(J::OrthPolyBasis, t)
    return cA 
 end
 
-function evaluate_d(J::OrthPolyBasis, t) 
-   cA = acquire!(J.B_pool, length(J), _valtype(J, t))
-   evaluate_d!(parent(cA), J, t)
-   return cA 
-end
-
 function ACE.evaluate_ed(J::OrthPolyBasis, t) 
    cA = acquire!(J.B_pool, length(J), _valtype(J, t))
    cdA = acquire!(J.B_pool, length(J), _valtype(J, t))
@@ -262,27 +256,6 @@ function evaluate!(P, J::OrthPolyBasis, t; maxn=length(J))
    return P
 end
 
-
-function evaluate_d!(dP, J::OrthPolyBasis, t; maxn=length(J))
-   @assert maxn <= length(dP)
-
-   P1 = evaluate_P1(J, t)
-   dP[1] = J.A[1] * _fcut_d_(J.pl, J.tl, J.pr, J.tr, t)
-   if maxn == 1; return dP; end
-
-   α = J.A[2] * t + J.B[2]
-   P2 = α * P1
-   dP[2] = α * dP[1] + J.A[2] * P1
-   if maxn == 2; return dP; end
-
-   @inbounds for n = 3:maxn
-      α = J.A[n] * t + J.B[n]
-      P3 = α * P2 + J.C[n] * P1
-      P2, P1 = P3, P2
-      dP[n] = α * dP[n-1] + J.C[n] * dP[n-2] + J.A[n] * P1
-   end
-   return dP
-end
 
 function evaluate_ed!(P, dP, J::OrthPolyBasis, t; maxn=length(J))
    @assert maxn <= length(P)
@@ -426,41 +399,5 @@ function _rrule_evaluate(J::OrthPolyBasis, t::Number,
    return a
 end
 
-
-function _rrule_evaluate_d(J::OrthPolyBasis, t::Number, 
-                           w::AbstractVector{<: Number}, 
-                           dt = 1.0, ddt = 0.0)
-   maxn = length(w)
-   @assert maxn <= length(J)
-
-   P1 = J.A[1] * _fcut_(J.pl, J.tl, J.pr, J.tr, t)
-   dP1 = J.A[1] * _fcut_d_(J.pl, J.tl, J.pr, J.tr, t)
-   ddP1 = J.A[1] * _fcut_dd_(J.pl, J.tl, J.pr, J.tr, t)
-   a = (ddP1 * dt^2 + dP1 * ddt) * w[1]
-   if maxn == 1 
-      return a
-   end 
-
-   α = J.A[2] * t + J.B[2]
-   P2 = α * P1
-   dP2 = α * dP1 + J.A[2] * P1
-   ddP2 = α * ddP1 + 2 * J.A[2] * dP1
-   a += (ddP2 * dt^2 + dP2 * ddt) * w[2] 
-   if maxn == 2
-      return a 
-   end 
-
-   @inbounds for n = 3:maxn
-      α = J.A[n] * t + J.B[n]
-      P3 = α * P2 + J.C[n] * P1
-      dP3 = α * dP2 + J.C[n] * dP1 + J.A[n] * P2
-      ddP3 = α * ddP2 + J.C[n] * ddP1 + 2 * J.A[n] * dP2
-      a += (ddP3 * dt^2 + dP3 * ddt) * w[n] 
-      P2, P1 = P3, P2
-      dP2, dP1 = dP3, dP2
-      ddP2, ddP1 = ddP3, ddP2
-   end
-   return a
-end 
 
 end

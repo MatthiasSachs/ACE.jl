@@ -243,12 +243,6 @@ function evaluate_ed(basis::Product1pBasis, Xs::UConfig)
    return A, dA 
 end 
 
-function evaluate_d(basis::Product1pBasis, X::Union{AbstractState, UConfig})
-   A, dA = evaluate_ed(basis, X)
-   release!(A) 
-   return dA 
-end
-
 # ------------- Partial derivative functionality 
 
 _check_args_is_sym() = true 

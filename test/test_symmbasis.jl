@@ -48,7 +48,6 @@ println_slim(@test isapprox(BB, BB1, rtol=1e-10))
 
 @info("evaluate with vector vs config")
 println_slim(@test BB ≈ evaluate(basis, Xs))
-println_slim(@test evaluate_d(basis, cfg) ≈ evaluate_d(basis, Xs))
 
 ##
 
@@ -126,15 +125,15 @@ println_slim(@test rank(A) == length(basis))
 ## Testing derivatives
 
 
-for ntest = 1:30
-   _rrval(x::ACE.XState) = x.rr
-   Us = randn(SVector{3, Float64}, length(Xs))
-   c = randn(length(basis))
-   F = t -> sum(c .* ACE.evaluate(basis, ACEConfig(Xs + t[1] * Us))).val
-   dF = t -> [ Us' * _rrval.(sum(c .* ACE.evaluate_d(basis, ACEConfig(Xs + t[1] * Us)), dims=1)[:]) ]
-   print_tf(@test fdtest(F, dF, [0.0], verbose=false))
-end
-println()
+# for ntest = 1:30
+#    _rrval(x::ACE.XState) = x.rr
+#    Us = randn(SVector{3, Float64}, length(Xs))
+#    c = randn(length(basis))
+#    F = t -> sum(c .* ACE.evaluate(basis, ACEConfig(Xs + t[1] * Us))).val
+#    dF = t -> [ Us' * _rrval.(sum(c .* ACE.evaluate_d(basis, ACEConfig(Xs + t[1] * Us)), dims=1)[:]) ]
+#    print_tf(@test fdtest(F, dF, [0.0], verbose=false))
+# end
+# println()
 
 ##
 
@@ -175,18 +174,6 @@ for L = 0:3
    end
    println()
 
-   @info(" .... derivatives")
-   for ntest = 1:30
-      _rrval(x::ACE.XState) = x.rr
-      Us = __TestSVec.(randn(SVector{3, Float64}, length(Xs)))
-      C = randn(typeof(φ.val), length(basis))
-      F = t -> sum( sum(c .* b.val)
-                    for (c, b) in zip(C, ACE.evaluate(basis, ACEConfig(Xs + t[1] * Us))) )
-      dF = t -> [ sum( sum(c .* db)
-                  for (c, db) in zip(C, _rrval.(ACE.evaluate_d(basis, ACEConfig(Xs + t[1] * Us))) * Us) ) ]
-      print_tf(@test fdtest(F, dF, [0.0], verbose=false))
-   end
-   println()
 end
 
 
@@ -225,19 +212,6 @@ for L1 = 0:2, L2 = 0:2
       BB1 = evaluate(basis, cfg1)
       D1txBB1xD2 = Ref(D1') .* BB1 .* Ref(D2)
       print_tf(@test isapprox(D1txBB1xD2, BB, rtol=1e-10))
-   end
-   println()
-
-   @info(" .... derivatives")
-   for ntest = 1:30
-      _rrval(x::ACE.XState) = x.rr
-      Us = __TestSVec.(randn(SVector{3, Float64}, length(Xs)))
-      C = randn(typeof(φ.val), length(basis))
-      F = t -> sum( sum(c .* b.val)
-                    for (c, b) in zip(C, ACE.evaluate(basis, ACEConfig(Xs + t[1] * Us))) )
-      dF = t -> [ sum( sum(c .* db)
-                       for (c, db) in zip(C, _rrval.(ACE.evaluate_d(basis, ACEConfig(Xs + t[1] * Us))) * Us) ) ]
-      print_tf(@test fdtest(F, dF, [0.0], verbose=false))
    end
    println()
 end

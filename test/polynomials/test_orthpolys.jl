@@ -9,7 +9,7 @@ using ACE, Test, ForwardDiff
 
 using LinearAlgebra: norm, cond
 using ACE.OrthPolys: OrthPolyBasis
-using ACE: evaluate, evaluate_d, evaluate_ed 
+using ACE: evaluate, evaluate_ed 
 using ACEbase.Testing: print_tf
 
 
@@ -28,28 +28,28 @@ end
 println()
 
 
-##
-@info("Construction and FD vs Grad for randomly generated OrthPolyBasis")
+# ##
+# @info("Construction and FD vs Grad for randomly generated OrthPolyBasis")
 
-N = 8
-Nquad = 1000
-tdf = rand(1000)
-ww = 1.0 .+ rand(1000)
-Jd = OrthPolyBasis(N, 2, 1.0, 2, -1.0, tdf, ww)
+# N = 8
+# Nquad = 1000
+# tdf = rand(1000)
+# ww = 1.0 .+ rand(1000)
+# Jd = OrthPolyBasis(N, 2, 1.0, 2, -1.0, tdf, ww)
 
-let errtol = 1e-12, ntest = 50
-   for itest = 1:ntest
-      x = 2*rand() - 1
-      Jx = evaluate(Jd, x)
-      dJx = evaluate_d(Jd, x)
-      Jx1, dJx1 = evaluate_ed(Jd, x)
-      print_tf(@test all( (Jx, dJx) .≈ (Jx1, dJx1) ) )
-      adJx = ForwardDiff.derivative(x -> evaluate(Jd, x), x)
-      err = maximum(abs.(dJx - adJx) ./ (1.0 .+ abs.(dJx)))
-      print_tf(@test (err < errtol))
-   end
-   println()
-end
+# let errtol = 1e-12, ntest = 50
+#    for itest = 1:ntest
+#       x = 2*rand() - 1
+#       Jx = evaluate(Jd, x)
+#       dJx = evaluate_d(Jd, x)
+#       Jx1, dJx1 = evaluate_ed(Jd, x)
+#       print_tf(@test all( (Jx, dJx) .≈ (Jx1, dJx1) ) )
+#       adJx = ForwardDiff.derivative(x -> evaluate(Jd, x), x)
+#       err = maximum(abs.(dJx - adJx) ./ (1.0 .+ abs.(dJx)))
+#       print_tf(@test (err < errtol))
+#    end
+#    println()
+# end
 
 
 

@@ -348,12 +348,6 @@ function evaluate!(Y, SH::AbstractSHBasis, R::AbstractVector)
 end
 
 
-function ACE.evaluate_d(SH::AbstractSHBasis, R::AbstractVector)
-	B, dB = evaluate_ed(SH, R) 
-	release!(B)
-	return dB 
-end 
-
 function ACE.evaluate_ed(SH::AbstractSHBasis, R::AbstractVector)
 	Y = acquire!(SH.B_pool, length(SH), _valtype(SH, R))
 	dY = acquire!(SH.dB_pool, length(SH), _gradtype(SH, R))
