@@ -294,47 +294,6 @@ function evaluate(basis::PIBasis, config::UConfig)
 end
 
 
-# -------------------------------------------------
-# gradients
-
-evaluate_d(basis::PIBasis, cfg::UConfig, args...) = 
-         evaluate_ed(basis, cfg, args...)[2]
-
-function evaluate_ed(basis::PIBasis, cfg::UConfig, args...) 
-   A, dA = evaluate_ed(basis.basis1p, cfg, args...)
-   AA, dAA = evaluate_ed(basis, A, dA)
-   release!(A)
-   release!(dA)
-   return AA, dAA 
-end
-
-_gradtype(basis::PIBasis, A, dA) = 
-      basis.real( promote_type(eltype(A), eltype(dA)) )
-
-# this is really an frule I think 
-function evaluate_ed(basis::PIBasis, A, dA)
-   VT = _valtype(basis, A)   
-   GT = _gradtype(basis, A, dA)
-   AA = Vector{VT}(undef, length(basis))
-   dAA = Matrix{GT}(undef, length(basis), size(dA, 2))
-   evaluate_ed!(AA, dAA, basis, A, dA)
-   release!(A)
-   release!(dA)
-   return AA, dAA 
-end
-
-function evaluate_ed!(AA, dAA, basis::PIBasis,
-                      cfg::UConfig, args...)
-   A, dA = evaluate_ed(basis.basis1p, cfg, args...)
-   evaluate_ed!(AA, dAA, basis, A, dA)
-   release!(dA)
-   release!(A)
-   return AA, dAA
-end
-
-
-
-
 function _AA_local_adjoints!(dAAdA, A, iAA2iA, iAA, ord, _real)
    if ord == 1
       return _AA_local_adjoints_1!(dAAdA, A, iAA2iA, iAA, ord, _real)
@@ -393,40 +352,4 @@ end
 _acquire_dAAdA!(basis::PIBasis, A) = Vector{eltype(A)}(undef, maxcorrorder(basis))
    
 
-function evaluate_ed!(AA, dAA, basis::PIBasis,
-                      A::AbstractVector, dA::AbstractMatrix)
-   dAAdA = _acquire_dAAdA!(basis, A)
-   _evaluate_ed!(AA, dAA, basis, A, dA, dAAdA) 
-end
 
-function _evaluate_ed!(AA, dAA, basis::PIBasis,
-                       A::AbstractVector, dA::AbstractMatrix, dAAdA)
-   orders = basis.spec.orders
-   iAA2iA = basis.spec.iAA2iA
-
-   # Must treat the constants separately. This is not so elegant and could 
-   # maybe be improved? 
-   if orders[1] == 0  # SHOULD BE THE ONLY ONE with ord=0!! 
-      iAAinit = 2
-      AA[1] = 1.0 
-      dAA[1, :] .= Ref(zero(eltype(dAA)))
-   else 
-      iAAinit = 1
-   end
-
-   for iAA = iAAinit:length(basis)
-      ord = orders[iAA]
-
-      # ----- compute the local adjoints dAA / dA
-      # dAAdA[a] ← ∏_{t ≂̸ a} A_{v_t}
-      AA[iAA] = _AA_local_adjoints!(dAAdA, A, iAA2iA, iAA, orders[iAA], basis.real)
-
-      # ----- now convert them into dAA / dX
-      for j = 1:size(dA, 2)
-         dAA[iAA, j] = sum(dAAdA[a] * dA[iAA2iA[iAA, a], j]
-                           for a = 1:ord) |> basis.real
-      end
-   end
-
-   return AA, dAA 
-end

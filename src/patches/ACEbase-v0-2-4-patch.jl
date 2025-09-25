@@ -174,12 +174,7 @@ function precon! end
 evaluate(basis::ACEBasis, args...) =  
       evaluate!( acquire_B!(basis, args...), basis, args... )
 
-evaluate_d(basis::ACEBasis, args...) =  
-      evaluate_d!( acquire_dB!(basis, args...), basis, args... )
-
-evaluate_ed(basis::ACEBasis, args...) =  
-      evaluate_ed!( acquire_B!(basis, args...), acquire_dB!(basis, args...), 
-                    basis, args... )
+# evaluate_d and evaluate_ed functions removed - derivative functionality has been removed
 
 
 

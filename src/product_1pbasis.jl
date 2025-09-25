@@ -148,99 +148,11 @@ function evaluate!(A, basis::Product1pBasis, cfg::UConfig)
 end
 
 
-# -------------------- jacobian codes, forward rule  
-
-function _write_dA_code(VDA, NB)
-   if VDA == Nothing 
-      getDVT = "promote_type(eltype(_A), " * prod("eltype_dB_$i, " for i = 1:NB) * ")"
-      getdA = Meta.parse("_dA = zeros($(getDVT), length(basis))")
-   else 
-      getdA = :(_dA = dA)
-   end
-
-end
-
-
-# args... could be a symbol to enable partial derivatives 
-# at the moment this is just passed into evaluate_ed!(...) 
-# to not evaluate 1p basis derivatives that aren't needed, but 
-# in the future a more complex construction could be envisioned that 
-# might considerably reduce the computational cost here... 
-@generated function _add_into_A_dA!(A::VA, dA::VDA, basis::Product1pBasis{NB}, X,
-                                    args...) where {VA, VDA, NB}
-   prodBi, getA = _write_A_code(VA, NB)
-   getdA = _write_dA_code(VDA, NB)
-   quote
-      Base.Cartesian.@nexprs($NB, i -> begin   # for i = 1:NB
-         bas_i = basis.bases[i] 
-         if !(bas_i isa Discrete1pBasis)
-            # only evaluate basis gradients for a continuous basis
-            B_i, dB_i = evaluate_ed(bas_i, X, args...)
-            eltype_dB_i = eltype(dB_i)
-         else
-            # we still need the basis values for the discrete basis though
-            # TODO: maybe the d part should be a no-op and remove this 
-            # case distinction ... 
-            B_i = evaluate(bas_i, X)
-            eltype_dB_i = Bool 
-         end
-      end)
-      # allocate A if necessary or just name _A = A if A is a buffer 
-      $(getA) 
-      $(getdA)
-
-      for (iA, ϕ) in enumerate(basis.indices)
-         # evaluate A
-         @inbounds _A[iA] += $prodBi 
-
-         # evaluate dA
-         # TODO: redo this with adjoints!!!!
-         #     also reverse order of operations to make fewer multiplications!
-         _dA[iA] = zero(eltype(_dA))
-         Base.Cartesian.@nexprs($NB, a -> begin  # for a = 1:NB
-            if !(basis.bases[a] isa Discrete1pBasis)
-               dt = dB_a[ϕ[a]]
-               Base.Cartesian.@nexprs($NB, b -> begin  # for b = 1:NB
-                  if b != a
-                     dt *= B_b[ϕ[b]]
-                  end
-               end)
-               _dA[iA] += dt
-            end
-         end)
-      end
-      Base.Cartesian.@nexprs($NB, i -> ( begin   # for i = 1:NB
-         # release_B!(bas_i, B_i)
-         release!(B_i)
-         if !(basis.bases[i] isa Discrete1pBasis)
-            release!(dB_i)
-         end
-      end))
-      return _A, _dA 
-   end
-end
-
-
-# this is a hack to resolve a method ambiguity. 
-add_into_A_dA!(A, dA, basis::Product1pBasis, X) = 
-               _add_into_A_dA!(A, dA, basis, X) 
-add_into_A_dA!(A, dA, basis::Product1pBasis, X, sym::Symbol) = 
-               _add_into_A_dA!(A, dA, basis, X, sym) 
-
-
 evaluate_ed(basis::Product1pBasis, X::AbstractState) = 
-         _add_into_A_dA!(nothing, nothing, basis, X)
+         error("evaluate_ed functionality removed along with add_into_A_dA functions")
 
 function evaluate_ed(basis::Product1pBasis, Xs::UConfig) 
-   A, dA1 = evaluate_ed(basis, first(Xs))
-   dA = zeros(eltype(dA1), length(basis), length(Xs))
-   dA[:, 1] .= dA1[:]
-   release!(dA1)
-   for (i, X) in enumerate(Xs)
-      i == 1 && continue; 
-      _add_into_A_dA!(A, (@view dA[:, i]), basis, X)
-   end
-   return A, dA 
+   error("evaluate_ed functionality removed along with add_into_A_dA functions")
 end 
 
 # ------------- Partial derivative functionality 
@@ -252,20 +164,12 @@ _check_args_is_sym(::Symbol) = true
 # args... may be empty or a symbol  for partial derivatives
 function evaluate_ed!(A, dA, basis::OneParticleBasis,
                      cfg::UConfig, args...)
-   @assert _check_args_is_sym(args...)
-   fill!(A, 0)
-   for (j, X) in enumerate(cfg)
-      add_into_A_dA!(A, (@view dA[:, j]), basis, X, args...)
-   end
-   return A, dA
+   error("evaluate_ed! functionality removed along with add_into_A_dA functions")
 end
 
 # args... may be empty or a symbol for partial derivatives
 function evaluate_ed!(A, dA, basis::Product1pBasis, X::AbstractState, args...)
-   @assert _check_args_is_sym(args...)
-   fill!(A, 0)
-   add_into_A_dA!(A, dA, basis, X, args...)
-   return A, dA
+   error("evaluate_ed! functionality removed along with add_into_A_dA functions")
 end
 
 # ----------------------------------------

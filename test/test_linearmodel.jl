@@ -48,9 +48,9 @@ println_slim(@test(all(test_fio(standard; warntype = false))))
 
 
 evaluate_ref(basis, cfg, c) = sum(evaluate(basis, cfg) .* c)
-grad_config_ref(basis, cfg, c) = permutedims(evaluate_d(basis, cfg)) * c
+grad_config_ref(basis, cfg, c) = error("evaluate_d functionality has been removed") # permutedims(evaluate_d(basis, cfg)) * c
 grad_params_ref(basis, cfg, c) = evaluate(basis, cfg)
-grad_params_config_ref(basis, cfg, c) = evaluate_d(basis, cfg)
+grad_params_config_ref(basis, cfg, c) = error("evaluate_d functionality has been removed") # evaluate_d(basis, cfg)
 
 evaluate(naive, cfg) ≈  evaluate(standard, cfg)
 evaluate_ref(basis, cfg, c) ≈ evaluate(naive, cfg)

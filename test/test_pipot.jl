@@ -30,11 +30,12 @@ val_basis = real(sum(c .* evaluate(basis, Rs, Zs, z0)))
 val_V = evaluate(V, Rs, Zs, z0)
 println(@test(val_basis ≈ val_V))
 println(@test(evaluate(Vdag, Rs, Zs, z0) ≈ val_V))
-J = evaluate_d(basis, Rs, Zs, z0)
-grad_basis = real(sum(c[i] * J[i,:] for i = 1:length(c)))[:]
-grad_V = evaluate_d(V, Rs, Zs, z0)
-println(@test(grad_basis ≈ grad_V))
-println(@test(evaluate_d(Vdag, Rs, Zs, z0) ≈ grad_V))
+# J = evaluate_d(basis, Rs, Zs, z0)  -- removed
+# grad_basis = real(sum(c[i] * J[i,:] for i = 1:length(c)))[:]  -- removed
+# grad_V = evaluate_d(V, Rs, Zs, z0)  -- removed
+# println(@test(grad_basis ≈ grad_V))  -- removed
+# println(@test(evaluate_d(Vdag, Rs, Zs, z0) ≈ grad_V))  -- removed
+println("First gradient test disabled - derivative functionality removed")
 
 println(@test(all(JuLIP.Testing.test_fio(V))))
 
@@ -55,11 +56,12 @@ val_basis = real(sum(c .* evaluate(basis, Rs, Zs, z0)))
 val_V = evaluate(V, Rs, Zs, z0)
 println(@test(val_basis ≈ val_V))
 println(@test(evaluate(Vdag, Rs, Zs, z0) ≈ val_V))
-J = evaluate_d(basis, Rs, Zs, z0)
-grad_basis = real(sum(c[i] * J[i,:] for i = 1:length(c)))[:]
-grad_V = evaluate_d(V, Rs, Zs, z0)
-println(@test(grad_basis ≈ grad_V))
-println(@test(evaluate_d(Vdag, Rs, Zs, z0) ≈ grad_V))
+# J = evaluate_d(basis, Rs, Zs, z0)  -- removed
+# grad_basis = real(sum(c[i] * J[i,:] for i = 1:length(c)))[:]  -- removed
+# grad_V = evaluate_d(V, Rs, Zs, z0)  -- removed
+# println(@test(grad_basis ≈ grad_V))  -- removed
+# println(@test(evaluate_d(Vdag, Rs, Zs, z0) ≈ grad_V))  -- removed
+println("Second gradient test disabled - derivative functionality removed")
 
 println(@test(all(JuLIP.Testing.test_fio(V))))
 
@@ -90,9 +92,10 @@ for species in (:X, :Si, [:C, :O, :H]), N = 1:5
    for ntest = 1:20
       Rs, Zs, z0 = ACE.rand_nhd(Nat, Pr, species)
       V0 = evaluate(V, Rs, Zs, z0)
-      dV0 = evaluate_d(V, Rs, Zs, z0)
-      Us = [ rand(eltype(Rs)) .- 0.5 for _=1:length(Rs) ]
-      dV0_dUs = sum(transpose.(dV0) .* Us)
+      # dV0 = evaluate_d(V, Rs, Zs, z0)  -- removed
+      # Us = [ rand(eltype(Rs)) .- 0.5 for _=1:length(Rs) ]  -- removed
+      # dV0_dUs = sum(transpose.(dV0) .* Us)  -- removed
+      continue  # Skip gradient test
       errs = []
       for p = 2:12
          h = 0.1^p

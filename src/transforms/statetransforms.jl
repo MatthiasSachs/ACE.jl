@@ -18,10 +18,8 @@ abstract type StateTransform end
 abstract type StaticGet <: StateTransform end 
 
 ACE.evaluate(fval::StaticGet, X) = getval(X, fval)
-ACE.evaluate_d(fval::StaticGet, X) = getval_d(X, fval)
 
 valtype(fval::StaticGet, X) = typeof(evaluate(fval, X))
-gradtype(fval::StaticGet, X) = typeof(evaluate_d(fval, X))
 
 
 struct GetVal{VSYM} <: StaticGet end 

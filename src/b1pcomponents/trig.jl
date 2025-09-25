@@ -61,6 +61,4 @@ evaluate(E::Trig, θ::Real) = [ exp(im * θ * l) for l = -E.L:E.L ]
 
 evaluate(E::Trig, rr::AbstractVector) = evaluate(E, _theta(rr))
 
-ACE.evaluate_d(E::Trig, θ::Real) = [ im * l * exp(im * θ * l)  for l = -E.L:E.L ]
 
-evaluate_ed(E::Trig, x) = evaluate(E, x), evaluate_d(E, x)

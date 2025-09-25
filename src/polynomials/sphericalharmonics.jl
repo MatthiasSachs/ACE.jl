@@ -7,11 +7,11 @@ using StaticArrays, LinearAlgebra
 
 import ACE, ACEbase, ACE.ACEbase024 
 
-import ACE: evaluate!, evaluate_d!, evaluate_ed!,
+import ACE: evaluate!,
 			   write_dict, read_dict,
 				ACEBasis, 
 				acquire!, release!, 
-				evaluate, evaluate_d, evaluate_ed 
+				evaluate 
 
 import ACE: VectorPool, ArrayCache 
 
@@ -197,74 +197,13 @@ function evaluate!(P, alp::ALPolynomials, S::SphericalCoords)
 end
 
 
-function _evaluate_ed(alp::ALPolynomials, S::SphericalCoords) 
-	VT = _valtype(alp, S)
-	P = acquire!(alp.B_pool, length(alp), VT)
-	dP = acquire!(alp.B_pool, length(alp), VT)
-	_evaluate_ed!(parent(P), parent(dP), alp::ALPolynomials, S::SphericalCoords)
-	return P, dP 
-end
+
 
 # this doesn't use the standard name because it doesn't 
 # technically perform the derivative w.r.t. S, but w.r.t. θ
 # further, P doesn't store P but (P if m = 0) or (P * sinθ if m > 0)
 # this is done for numerical stability 
-function _evaluate_ed!(P, dP, alp::ALPolynomials, S::SphericalCoords)
-	L = alp.L 
-	A = alp.A 
-	B = alp.B 
-	@assert length(A) >= sizeP(L)
-	@assert length(B) >= sizeP(L)
-	@assert length(P) >= sizeP(L)
-	@assert length(dP) >= sizeP(L)
-
-	temp = sqrt(0.5/π)
-	P[index_p(0, 0)] = temp
-	temp_d = 0.0
-	dP[index_p(0, 0)] = temp_d
-	if L == 0; return P, dP; end
-
-	P[index_p(1, 0)] = S.cosθ * sqrt(3) * temp
-	dP[index_p(1, 0)] = -S.sinθ * sqrt(3) * temp + S.cosθ * sqrt(3) * temp_d
-	temp1, temp_d = ( - sqrt(1.5) * temp,
-					      - sqrt(1.5) * (S.cosθ * temp + S.sinθ * temp_d) )
-	P[index_p(1, 1)] = temp1
-	dP[index_p(1, 1)] = temp_d
-
-	for l in 2:L
-		m = 0
-		@inbounds P[index_p(l, m)] =
-				A[index_p(l, m)] * (     S.cosθ * P[index_p(l - 1, m)]
-				             + B[index_p(l, m)] * P[index_p(l - 2, m)] )
-		@inbounds dP[index_p(l, m)] =
-			A[index_p(l, m)] * (
-							- S.sinθ * P[index_p(l - 1, m)]
-							+ S.cosθ * dP[index_p(l - 1, m)]
-			             + B[index_p(l, m)] * dP[index_p(l - 2, m)] )
-
-		for m in 1:(l-2)
-			@inbounds P[index_p(l, m)] =
-					A[index_p(l, m)] * (     S.cosθ * P[index_p(l - 1, m)]
-					             + B[index_p(l, m)] * P[index_p(l - 2, m)] )
-			@inbounds dP[index_p(l, m)] =
-				A[index_p(l, m)] * (
-								- S.sinθ^2 * P[index_p(l - 1, m)]
-								+ S.cosθ * dP[index_p(l - 1, m)]
-				             + B[index_p(l, m)] * dP[index_p(l - 2, m)] )
-		end
-		@inbounds P[index_p(l, l - 1)] = sqrt(2 * (l - 1) + 3) * S.cosθ * temp1
-		@inbounds dP[index_p(l, l - 1)] = sqrt(2 * (l - 1) + 3) * (
-									        -S.sinθ^2 * temp1 + S.cosθ * temp_d )
-
-      (temp1, temp_d) = (
-					-sqrt(1.0+0.5/l) * S.sinθ * temp1,
-		         -sqrt(1.0+0.5/l) * (S.cosθ * temp1 * S.sinθ + S.sinθ * temp_d) )
-		@inbounds P[index_p(l, l)] = temp1
-		@inbounds dP[index_p(l, l)] = temp_d
-	end
-
-	return P, dP
-end
+# function _evaluate_ed! removed - derivative functionality has been removed
 
 
 
@@ -327,9 +266,7 @@ read_dict(::Val{:ACE_SHBasis}, D::Dict) =
 Base.length(S::AbstractSHBasis) = sizeY(maxL(S))
 
 
-_evaluate_d!(dY, L, S, P, dP, ::SHBasis) = cYlm_d!(dY, L, S, P, dP)
-
-_evaluate_ed!(Y, dY, L, S, P, dP, ::SHBasis) = cYlm_ed!(Y, dY, L, S, P, dP)
+# _evaluate_d! and _evaluate_ed! functions removed - derivative functionality has been removed
 
 function ACE.evaluate(SH::SHBasis, R::AbstractVector)
 	Y = acquire!(SH.B_pool, length(SH), _valtype(SH, R))
@@ -348,23 +285,7 @@ function evaluate!(Y, SH::AbstractSHBasis, R::AbstractVector)
 end
 
 
-function ACE.evaluate_ed(SH::AbstractSHBasis, R::AbstractVector)
-	Y = acquire!(SH.B_pool, length(SH), _valtype(SH, R))
-	dY = acquire!(SH.dB_pool, length(SH), _gradtype(SH, R))
-	evaluate_ed!(parent(Y), parent(dY), SH, R)
-	return Y, dY
-end
-
-function evaluate_ed!(Y, dY, SH::AbstractSHBasis, R::AbstractVector)
-	@assert length(R) == 3
-	L = maxL(SH)
-	S = cart2spher(R)
-	P, dP = _evaluate_ed(SH.alp, S)
-	cYlm_ed!(Y, dY, maxL(SH), S, P, dP)
-	release!(P)
-	release!(dP)
-	return Y, dY
-end
+# evaluate_ed and evaluate_ed! functions removed - derivative functionality has been removed
 
 
 """
@@ -398,43 +319,7 @@ end
 
 
 
-"""
-evaluate gradients of complex spherical harmonics
-"""
-function cYlm_ed!(Y, dY, L, S::SphericalCoords, P, dP)
-	@assert length(P) >= sizeP(L)
-	@assert length(Y) >= sizeY(L)
-	@assert length(dY) >= sizeY(L)
-
-	# m = 0 case
-	ep = 1 / sqrt(2)
-	for l = 0:L
-		Y[index_y(l, 0)] = P[index_p(l, 0)] * ep
-		dY[index_y(l, 0)] = dspher_to_dcart(S, 0.0, dP[index_p(l, 0)] * ep)
-	end
-
-   sig = 1
-   ep_fact = S.cosφ + im * S.sinφ
-
-	for m in 1:L
-		sig *= -1
-		ep *= ep_fact            # ep =   exp(i *   m  * φ)
-		em = sig * conj(ep)      # ep = ± exp(i * (-m) * φ)
-		dep_dφ = im *   m  * ep
-		dem_dφ = im * (-m) * em
-		for l in m:L
-			p_div_sinθ = P[index_p(l,m)]
-			@inbounds Y[index_y(l, -m)] = em * p_div_sinθ * S.sinθ
-			@inbounds Y[index_y(l,  m)] = ep * p_div_sinθ * S.sinθ
-
-			dp_dθ = dP[index_p(l,m)]
-			@inbounds dY[index_y(l, -m)] = dspher_to_dcart(S, dem_dφ * p_div_sinθ, em * dp_dθ)
-			@inbounds dY[index_y(l,  m)] = dspher_to_dcart(S, dep_dφ * p_div_sinθ, ep * dp_dθ)
-		end
-	end
-
-	return Y, dY
-end
+# cYlm_ed! function removed - derivative functionality has been removed
 
 
 

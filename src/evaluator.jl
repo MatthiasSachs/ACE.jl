@@ -166,7 +166,7 @@ function _rrule_evaluate(dp, m::LinearACEModel, V::ProductEvaluator, cfg::UConfi
    spec = V.pibasis.spec
    
    # stage 1: precompute all the A values
-   A, dA = evaluate_ed(basis1p, cfg)
+   error("evaluate_ed functionality has been removed")
 
    # stage 2: compute the coefficients for the ∇A_{nlm} = ∇ϕ_{nlm}
    # dAco[nlm] = coefficient of ∇A_{nlm} (via adjoints)
@@ -206,10 +206,10 @@ function adjoint_EVAL_D(m::LinearACEModel, V::ProductEvaluator, cfg, w)
    _real = V.real
 
    # [1] dA_t = ∑_j ∂ϕ_t / ∂X_j
-   A, dA = evaluate_ed(V.pibasis.basis1p, cfg)
+   error("evaluate_ed functionality has been removed")
 
    # some allocations based on the types of A, dA 
-   dAAdA = _acquire_dAAdA!(V.pibasis, A)
+   # dAAdA = _acquire_dAAdA!(V.pibasis, A)
 
    _dAw = contract(w[1], dA[1])
    T_dAw = typeof(_dAw)

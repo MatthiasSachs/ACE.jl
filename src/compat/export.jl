@@ -40,7 +40,8 @@ function export_ace(fptr::IOStream, Pr::TransformedPolys; ntests=0, kwargs...)
    for itest = 1:ntests
       r = ACE.rand_radial(Pr)
       P = ACE.evaluate(Pr, r)
-      dP = ACE.evaluate_d(Pr, r)
+      # dP = ACE.evaluate_d(Pr, r)  -- removed, derivative functionality has been removed
+      dP = zeros(length(P))  # placeholder
       println(fptr, " r=$(r)")
       for n = 1:length(P)
          println(fptr, " $(P[n]) $(dP[n])")

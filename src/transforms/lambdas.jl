@@ -25,23 +25,6 @@ lambda(str::String) = λ(str)
 
 evaluate(t::Lambda, x) = t.ll.λ(x)
 
-evaluate_d(t::Lambda, x::SVector) =  ForwardDiff.gradient(t.ll.λ, x)
-
-ACE.evaluate_ed(t::Lambda, x) =  evaluate(t, x), evaluate_d(t, x)
-
-evaluate_dd(t::Lambda, x::SVector) = ForwardDiff.hessian(t.ll.λ, x)
-
-evaluate_d(t::Lambda, x::Real) =     ForwardDiff.derivative(t.ll.λ, x)
-
-evaluate_dd(t::Lambda, x::Real) =     ForwardDiff.derivative(y -> evaluate_d(t, y), x)
-
-
-function frule_evaluate(t::Lambda, x::Real, dx::SVector)
-      f = evaluate(t, x)
-      df = evaluate_d(t, x)
-      return f, df * dx
-end
-
 
 write_dict(t::Lambda)  = Dict(
          "__id__" => "ACE_Lambda", 

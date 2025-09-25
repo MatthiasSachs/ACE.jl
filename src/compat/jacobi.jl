@@ -12,8 +12,7 @@ module JacobiPolys
 using QuadGK
 
 import JuLIP: evaluate,
-              evaluate!,
-              evaluate_d!
+              evaluate!
 
 import JuLIP.MLIPs: alloc_B, alloc_dB, IPBasis
 

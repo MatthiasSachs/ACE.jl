@@ -318,23 +318,6 @@ evaluate!(B, basis::SymmetricBasis, AA::AbstractVector{<: Number}) =
 
 # ---------------- gradients
 
-# args... could be nothing or sym
-function evaluate_ed(basis::SymmetricBasis, cfg::UConfig, args...)
-   AA, dAA = evaluate_ed(basis.pibasis, cfg, args...)
-   B, dB = evaluate_ed(basis, AA, dAA) 
-   release!(AA)
-   release!(dAA)
-   return B, dB
-end
-
-function evaluate_ed(basis::SymmetricBasis, AA::AbstractVector{<: Number}, dAA)
-   B = genmul(basis.A2Bmap, AA, (a, b) -> basis.real(a * b))
-   dB = genmul(basis.A2Bmap, dAA, (a, b) -> basis.real( ACE.coco_o_daa(a, b) ))
-   return B, dB 
-end
-
-evaluate_d(basis::SymmetricBasis, args...) = evaluate_ed(basis, args...)[2]
-
 # ------------------------------- 
 
 

@@ -7,10 +7,10 @@ using LinearAlgebra: dot
 
 import ACE
 
-import ACE: evaluate!, evaluate_d!, evaluate_ed!, 
-            evaluate, evaluate_d, evaluate_ed, evaluate_dd, 
+import ACE: evaluate!, 
+            evaluate, 
             frule_evaluate, 
-            _rrule_evaluate, _rrule_evaluate_d,
+            _rrule_evaluate,
             read_dict, write_dict,
             inv_transform,
             ACEBasis, ScalarACEBasis, 
@@ -224,21 +224,11 @@ function evaluate(J::OrthPolyBasis, t)
    return cA 
 end
 
-function ACE.evaluate_ed(J::OrthPolyBasis, t) 
-   cA = acquire!(J.B_pool, length(J), _valtype(J, t))
-   cdA = acquire!(J.B_pool, length(J), _valtype(J, t))
-   evaluate_ed!(parent(cA), parent(cdA), J, t)
-   return cA, cdA 
-end
 
 
 
-function frule_evaluate(J::OrthPolyBasis, t, dt)
-   A, dA = evaluate_ed(J, t)   
-   dA_dt = parent(dA) .* Ref(dt)
-   release!(dA)
-   return A, dA_dt 
-end
+
+
 
 
 evaluate_P1(J::OrthPolyBasis, t) =
@@ -257,26 +247,7 @@ function evaluate!(P, J::OrthPolyBasis, t; maxn=length(J))
 end
 
 
-function evaluate_ed!(P, dP, J::OrthPolyBasis, t; maxn=length(J))
-   @assert maxn <= length(P)
-   @assert maxn <= length(dP)
 
-   P[1] = evaluate_P1(J, t)
-   dP[1] = J.A[1] * _fcut_d_(J.pl, J.tl, J.pr, J.tr, t)
-   if maxn == 1; return P, dP; end
-
-   α = J.A[2] * t + J.B[2]
-   P[2] = α * P[1]
-   dP[2] = α * dP[1] + J.A[2] * P[1]
-   if maxn == 2; return P, dP; end
-
-   @inbounds for n = 3:maxn
-      α = J.A[n] * t + J.B[n]
-      P[n] = α * P[n-1] + J.C[n] * P[n-2]
-      dP[n] = α * dP[n-1] + J.C[n] * dP[n-2] + J.A[n] * P[n-1]
-   end
-   return dP
-end
 
 
 # INCORRECT???
@@ -355,14 +326,7 @@ end
 
 import ACE: frule_evaluate
 
-function ACE.frule_evaluate(J::OrthPolyBasis, t::Number, dt::Number) 
-   len = length(J)
-   B = acquire!(J.B_pool, len, typeof(t))
-   dB = acquire!(J.B_pool, len, typeof(t))
-   evaluate_ed!(B, dB, J, t)
-   dB[:] .*= dt 
-   return B, dB
-end
+
 
 
 

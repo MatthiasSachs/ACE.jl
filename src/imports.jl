@@ -9,7 +9,7 @@ using ACEbase: @def
                  get_spec,
                  degree,
                  gensparse,
-                 add_into_A!, add_into_A_dA!,
+                 add_into_A!,
                  scaling, 
                  AbstractACEModel, 
                  AbstractProperty, 
@@ -20,8 +20,8 @@ end
    import ACEbase
 
    import ACEbase: #ACEBasis, ScalarACEBasis, OneParticleBasis, Discrete1pBasis, 
-                   evaluate, evaluate_d, evaluate_dd, evaluate_ed,
-                   evaluate!, evaluate_d!, evaluate_dd!, evaluate_ed!,
+                   evaluate,
+                   evaluate!,
                    _allfieldsequal
                    # precon!, _allfieldsequal,
                    # AbstractState,

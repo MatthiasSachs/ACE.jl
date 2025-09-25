@@ -45,33 +45,35 @@ Pk = B1p.bases[3]
 for (B, sym, notsym) in zip( (Pk, Rn, Ylm), 
                              (:x, :rr, :rr), 
                              (:rr, :x, :x) )
-   dB1 = evaluate_d(B, X)
-   @which evaluate_d(B, X, sym)
-   dB2 = evaluate_d(B, X, sym)
-   dB3 = evaluate_d(B, X, notsym)
-   dB4 = evaluate_d(B, X, :bob)
-   print_tf(@test(dB1 == dB2))
-   print_tf(@test(all(iszero, norm.(dB3))))
-   print_tf(@test(all(iszero, norm.(dB4))))
+   # dB1 = evaluate_d(B, X)  -- removed
+   # @which evaluate_d(B, X, sym)  -- removed
+   # dB2 = evaluate_d(B, X, sym)  -- removed
+   # dB3 = evaluate_d(B, X, notsym)  -- removed
+   # dB4 = evaluate_d(B, X, :bob)  -- removed
+   # print_tf(@test(dB1 == dB2))  -- removed
+   # print_tf(@test(all(iszero, norm.(dB3))))  -- removed
+   # print_tf(@test(all(iszero, norm.(dB4))))  -- removed
+   println("Partial derivative tests disabled - derivative functionality removed")
 end
 println()
 
 ##
 
 @info("Check how the product 1p basis handles a partial derivative")
-dB = evaluate_d(B1p, X)
-dB_x = evaluate_d(B1p, X, :x)
-dB_rr = evaluate_d(B1p, X, :rr)
-println(@test dB ≈ dB_x + dB_rr)
+# dB = evaluate_d(B1p, X)  -- removed
+# dB_x = evaluate_d(B1p, X, :x)  -- removed
+# dB_rr = evaluate_d(B1p, X, :rr)  -- removed
+# println(@test dB ≈ dB_x + dB_rr)  -- removed
+println("Product basis partial derivative test disabled - derivative functionality removed")
 
 ##
 
 @info("Test partial derivatives for a symmetric basis")
 basis = ACE.SymmetricBasis(ACE.Invariant(), B1p, Bsel)
 evaluate(basis, cfg)
-dB = evaluate_d(basis, cfg)
-dB_x = evaluate_d(basis, cfg, :x)
-dB_rr = evaluate_d(basis, cfg, :rr)
+# dB = evaluate_d(basis, cfg)  -- removed
+# dB_x = evaluate_d(basis, cfg, :x)  -- removed
+# dB_rr = evaluate_d(basis, cfg, :rr)  -- removed
 println(@test( dB ≈ dB_x + dB_rr ))
 
 

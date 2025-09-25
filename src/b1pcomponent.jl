@@ -199,13 +199,7 @@ end
 evaluate(basis::B1pComponent, X::AbstractState) = 
          evaluate(basis.basis, evaluate(basis.fval, X))
 
-function evaluate_ed(basis::B1pComponent, X::AbstractState) 
-   x = evaluate(basis.fval, X)
-   B, dP = evaluate_ed(basis.basis, x)
-   dB = rrule_evaluate(dP, basis.fval, X)
-   release!(dP)
-   return B, dB
-end
+
 
 
 

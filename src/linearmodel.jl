@@ -125,7 +125,7 @@ end
 # ∂_params ∂_config V
 # currently doesn't work with multiple properties
 grad_params_config(m::LinearACEModel, cfg::AbstractConfiguration) = 
-      evaluate_d(m.basis, cfg)
+      error("evaluate_d functionality has been removed")
 
 
 
@@ -147,14 +147,7 @@ end
 
 function grad_config(m::LinearACEModel, ::NaiveEvaluator, 
                     cfg::AbstractConfiguration)
-   dB = evaluate_d(m.basis, cfg) 
-   TG = promote_type(eltype(m.c), eltype(dB))
-   g = zeros(TG, length(cfg))
-   for ix = 1:length(cfg), ib = 1:length(m.basis)
-      g[ix] += m.c[ib] * dB[ib, ix]
-   end
-   release!(dB)
-   return g 
+   error("evaluate_d functionality has been removed")
 end
 
 function adjoint_EVAL_D(m::LinearACEModel, ::NaiveEvaluator, 

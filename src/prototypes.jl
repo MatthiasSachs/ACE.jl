@@ -20,12 +20,6 @@ interface functions for `OneParticleBasis`
 function add_into_A! end
 
 """
-interface functions for `OneParticleBasis`
-"""
-function add_into_A_dA! end
-
-
-"""
 `function degree` : compute some notion of degree of
 the `arg` argument.
 """
@@ -65,8 +59,8 @@ In code this becomes
 ```julia
 a = evaluate(A, x)
 b = evaluate(B, a)
-∂a∂x = evaluate_d(A, x)
-∂b∂x = frule_evaluate(B, a, ∂a∂x)
+# ∂a∂x = evaluate_d(A, x)  -- removed
+# ∂b∂x = frule_evaluate(B, a, ∂a∂x)  -- removed
 ```
 """
 function frule_evaluate! end 
@@ -84,8 +78,8 @@ In code this becomes
 ```julia
 a = evaluate(A, x)
 b = evaluate(B, a)
-∂b∂a = evaluate_d(B, a)
-∂b∂x = rrule_evaluate(∂b∂a, A, x)
+# ∂b∂a = evaluate_d(B, a)  -- removed
+# ∂b∂x = rrule_evaluate(∂b∂a, A, x)  -- removed
 ```
 """
 function rrule_evaluate! end 
