@@ -429,17 +429,6 @@ Base.iterate(cfg::ACEConfig, args...) = iterate(cfg.Xs, args...)
 
 Base.length(cfg::ACEConfig) = length(cfg.Xs)
 
-# ---------------- AD code 
-
-# TODO: check whether this is still needed 
-# this function makes sure that gradients w.r.t. a State become a DState 
-function rrule(::typeof(getproperty), X::XState, sym::Symbol) 
-   val = getproperty(X, sym)
-   return val, w -> ( NoTangent(), 
-                      dstate_type(w[1], X)( NamedTuple{(sym,)}((w,)) ), 
-                      NoTangent() )
-end
-
 
 
 const UConfig = Union{ACEConfig, AbstractVector{<: AbstractState}}
