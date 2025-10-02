@@ -10,16 +10,11 @@ module ParamTest
 using ACE, JuLIP, LinearAlgebra
 import ACE: alloc_temp
 import ACE.PairPotentials: PolyPairBasis
-# import ACE.OrthPolys: TransformedPolys
 import JuLIP: energy, evaluate!
 
 set_params(trans::PolyTransform, params) =
           PolyTransform(params[1], params[2])
 
-# set_params(J::TransformedPolys, params) =
-#           TransformedPolys(J.J,
-#                            set_params(J.trans, params),
-#                            J.rl, J.ru)
 
 set_params(pB::PolyPairBasis, params) =
          PolyPairBasis( set_params(pB.J, params),

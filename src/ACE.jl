@@ -149,6 +149,7 @@ include("testing/testing.jl")
 
 # include("ad.jl")
 
+include("ACEbonds.jl")
 
 # ---------------- some extra experimental dispatching
 

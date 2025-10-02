@@ -6,7 +6,6 @@ module Export
 import ACE, JuLIP
 using ACE.RPI: RnYlm1pBasis, RnYlmBasisFcn
 using ACE: PIBasis, PIBasisFcn, PIPotential
-using ACE.OrthPolys: TransformedPolys
 using ACE: rand_radial, cutoff, numz
 using JuLIP: energy, bulk, i2z, z2i, chemical_symbol
 using ACE.PairPotentials: RepulsiveCore, PolyPairPot
@@ -18,36 +17,7 @@ function export_ace(fname::AbstractString, args...;  kwargs...)
 end
 
 
-function export_ace(fptr::IOStream, Pr::TransformedPolys; ntests=0, kwargs...)
-   p = Pr.trans.p
-   r0 = Pr.trans.r0
-   xr = Pr.J.tr
-   xl = Pr.J.tl
-   pr = Pr.J.pr
-   pl = Pr.J.pl
-   rcut = cutoff(Pr)
-   maxn = length(Pr)
 
-   println(fptr, "transform parameters: p=$(p) r0=$(r0)")
-   println(fptr, "cutoff parameters: rcut=$rcut xl=$xl xr=$xr pl=$pl pr=$pr")
-   println(fptr, "recursion coefficients: maxn=$(maxn)")
-   for n = 1:maxn
-      println(fptr, " $(Pr.J.A[n]) $(Pr.J.B[n]) $(Pr.J.C[n])")
-   end
-
-   # save some tests
-   println(fptr, "tests: ntests=$(ntests)")
-   for itest = 1:ntests
-      r = ACE.rand_radial(Pr)
-      P = ACE.evaluate(Pr, r)
-      # dP = ACE.evaluate_d(Pr, r)  -- removed, derivative functionality has been removed
-      dP = zeros(length(P))  # placeholder
-      println(fptr, " r=$(r)")
-      for n = 1:length(P)
-         println(fptr, " $(P[n]) $(dP[n])")
-      end
-   end
-end
 
 function export_ace(fptr::IOStream, Vpair::PolyPairPot; kwargs...)
    println(fptr, "begin polypairpot")

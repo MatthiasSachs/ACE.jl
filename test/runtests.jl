@@ -40,6 +40,12 @@ using ACE, Test, Printf, LinearAlgebra, StaticArrays, BenchmarkTools
     # Experimental material
     @testset "Sparsification" begin include("test_sparsify.jl") end 
     # @testset "Multipliers" begin include("test_multiplier.jl") end
+
+    @testset "Bonds basics" begin include("./bonds/test_bonds.jl"); end
+    @testset "Invariant Cylindrical" begin include("./bonds/test_invcyl.jl"); end
+    @testset "Bond Iterators" begin include("./bonds/test_bonditerators.jl"); end
+    @testset "Calculator (Cylindrical env.)" begin include("./bonds/test_cylindricalbondpot.jl"); end
+    @testset "Calculator (Ellipsoid env.)" begin include("./bonds/test_ellipsoidbondpot.jl"); end
 end
 
 
